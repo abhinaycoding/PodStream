@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -14,10 +15,16 @@ export const AuthProvider = ({ children }: any) => {
   const [authLoading, setAuthLoading] = useState(true);
 
   const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
 
   const login = async () => {
-    return await signInWithPopup(auth, provider);
+    await signInWithRedirect(auth, provider);
   };
+
+  // Handle the redirect result when the user returns after Google sign-in
+  useEffect(() => {
+    getRedirectResult(auth).catch(() => {});
+  }, []);
 
   const logout = async () => {
     await signOut(auth);

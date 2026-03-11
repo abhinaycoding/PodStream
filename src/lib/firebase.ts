@@ -5,7 +5,7 @@ import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "podium-app-3562c.firebaseapp.com",
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN || "podium-app-3562c.firebaseapp.com",
   projectId: "podium-app-3562c",
   storageBucket: "podium-app-3562c.firebasestorage.app",
   messagingSenderId: "315371866600",
