@@ -92,7 +92,7 @@ const Skeleton = () => (
 
 /* ════ MAIN ════ */
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, authLoading } = useAuth();
   const navigate = useNavigate();
   const [feed, setFeed] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,6 +107,13 @@ const Dashboard = () => {
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const thumb = (id: string, fb?: string) => fb || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+  // Redirect to landing if not authenticated once auth has resolved
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) navigate("/");
+  }, [user, authLoading]);
+
 
   const toggleFav = async (v: any) => {
     if (!user) return;
@@ -163,7 +170,7 @@ const Dashboard = () => {
     } catch (e) { console.error(e); }
   };
 
-  if (loading) return <Skeleton />;
+  if (authLoading || loading) return <Skeleton />;
 
   const featured = filtered[0];
   const rest = filtered.slice(1);
