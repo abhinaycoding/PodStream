@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import FluidGlass from "@/components/ui/FluidGlass";
 
 const FEATURES = [
   { icon: Brain, title: "AI Curation", body: "Learns exactly what you love. Gets smarter every session." },
@@ -45,23 +46,10 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] overflow-x-hidden text-white font-sans selection:bg-white selection:text-black">
-      
-      {/* ══ VERTICAL CURTAIN BACKGROUND ══ */}
-      <div className="fixed inset-0 z-0 flex w-full h-full pointer-events-none origin-top mix-blend-screen opacity-90">
-        {BANDS.map((_, i) => (
-          <div 
-            key={i} 
-            className="flex-1 h-full border-r border-[#0011ff]/10"
-            style={{
-              // Deep blue to black gradient simulating folded velvet/curtains
-              background: `linear-gradient(90deg, #000000 0%, #0015b3 50%, #0026ff 95%, #000000 100%)`
-            }}
-          />
-        ))}
+    <FluidGlass mode="lens">
+      <div className="w-full min-h-screen relative z-10 font-sans selection:bg-white selection:text-black">
         {/* Top-down shadow gradient to ground the content */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/80" />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/80 pointer-events-none -z-10" />
 
       {/* ══ BRUTALIST PURE-TEXT NAVBAR ══ */}
       <header className="fixed top-0 left-0 right-0 z-50 pt-8 pb-4 mix-blend-difference">
@@ -136,7 +124,7 @@ const Landing = () => {
       </div>
 
       {/* ══ MINIMALIST FEATURES GRID ══ */}
-      <section className="relative z-10 w-full bg-black py-40">
+      <section className="relative z-10 w-full bg-black/40 py-40">
         <div className="max-w-[1600px] mx-auto px-8 md:px-12">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-16 mb-24 border-b border-white/20 pb-12">
@@ -166,7 +154,7 @@ const Landing = () => {
       </section>
 
       {/* ══ BRUTALIST CTA ══ */}
-      <section className="relative z-10 w-full bg-[#0015b3] py-40 flex items-center justify-center text-center">
+      <section className="relative z-10 w-full bg-[#0015b3]/80 backdrop-blur-sm py-40 flex items-center justify-center text-center">
         <div className="max-w-4xl mx-auto px-8 flex flex-col items-center">
           <h2 className="font-sans font-medium text-[clamp(4rem,8vw,7rem)] text-white tracking-tight leading-[0.9] mb-12">
             Change your<br />
@@ -179,7 +167,7 @@ const Landing = () => {
       </section>
 
       {/* ══ MINIMAL FOOTER ══ */}
-      <footer className="relative z-10 w-full bg-black py-16 px-8 md:px-12 border-t border-white/20">
+      <footer className="relative z-10 w-full bg-black/80 py-16 px-8 md:px-12 border-t border-white/20">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
           <div className="flex items-center gap-3">
              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white">
@@ -232,8 +220,10 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </FluidGlass>
   );
 };
+
 
 export default Landing;
