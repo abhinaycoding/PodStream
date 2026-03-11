@@ -8,28 +8,28 @@ const CACHE_TTL_MS = 23 * 60 * 60 * 1000; // 23 hours
 // ─── Curated per-topic fallback (used only if quota is truly exhausted & no cache) ───
 const TOPIC_FALLBACKS: Record<string, any[]> = {
   default: [
-    { id: { videoId: "h1sOuxWIsfE" }, snippet: { title: "Naval Ravikant on Happiness, Startups, and Meaning", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/h1sOuxWIsfE/hqdefault.jpg" } } } },
-    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: Tools for Better Focus and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://i.ytimg.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
-    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: OpenAI CEO on GPT-4 and the Future of AI", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
-    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: The AI Revolution and NVIDIA", channelTitle: "Acquired", thumbnails: { high: { url: "https://i.ytimg.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
+    { id: { videoId: "h1sOuxWIsfE" }, snippet: { title: "Naval Ravikant on Happiness, Startups, and Meaning", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://img.youtube.com/vi/h1sOuxWIsfE/hqdefault.jpg" } } } },
+    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: Tools for Better Focus and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://img.youtube.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
+    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: OpenAI CEO on GPT-4 and the Future of AI", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://img.youtube.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
+    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: The AI Revolution and NVIDIA", channelTitle: "Acquired", thumbnails: { high: { url: "https://img.youtube.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
   ],
   "Technology": [
-    { id: { videoId: "WqYBx2gB6vA" }, snippet: { title: "How AI is Changing Software Development", channelTitle: "Fireship", thumbnails: { high: { url: "https://i.ytimg.com/vi/WqYBx2gB6vA/hqdefault.jpg" } } } },
-    { id: { videoId: "kCc8FmEb1nY" }, snippet: { title: "Let's build GPT: from scratch, in code, step by step", channelTitle: "Andrej Karpathy", thumbnails: { high: { url: "https://i.ytimg.com/vi/kCc8FmEb1nY/hqdefault.jpg" } } } },
+    { id: { videoId: "WqYBx2gB6vA" }, snippet: { title: "How AI is Changing Software Development", channelTitle: "Fireship", thumbnails: { high: { url: "https://img.youtube.com/vi/WqYBx2gB6vA/hqdefault.jpg" } } } },
+    { id: { videoId: "kCc8FmEb1nY" }, snippet: { title: "Let's build GPT: from scratch, in code, step by step", channelTitle: "Andrej Karpathy", thumbnails: { high: { url: "https://img.youtube.com/vi/kCc8FmEb1nY/hqdefault.jpg" } } } },
   ],
   "Business": [
-    { id: { videoId: "U_A_BwIapU4" }, snippet: { title: "How To Build a Business From Scratch", channelTitle: "Modern Wisdom", thumbnails: { high: { url: "https://i.ytimg.com/vi/U_A_BwIapU4/hqdefault.jpg" } } } },
-    { id: { videoId: "XkWJ2-l-qxk" }, snippet: { title: "Nikhil Kamath on Building Zerodha & Startups", channelTitle: "WTF is", thumbnails: { high: { url: "https://i.ytimg.com/vi/XkWJ2-l-qxk/hqdefault.jpg" } } } },
+    { id: { videoId: "U_A_BwIapU4" }, snippet: { title: "How To Build a Business From Scratch", channelTitle: "Modern Wisdom", thumbnails: { high: { url: "https://img.youtube.com/vi/U_A_BwIapU4/hqdefault.jpg" } } } },
+    { id: { videoId: "XkWJ2-l-qxk" }, snippet: { title: "Nikhil Kamath on Building Zerodha & Startups", channelTitle: "WTF is", thumbnails: { high: { url: "https://img.youtube.com/vi/XkWJ2-l-qxk/hqdefault.jpg" } } } },
   ],
   "Finance": [
-    { id: { videoId: "PHe0bXAIuk0" }, snippet: { title: "How the Economic Machine Works by Ray Dalio", channelTitle: "Principles by Ray Dalio", thumbnails: { high: { url: "https://i.ytimg.com/vi/PHe0bXAIuk0/hqdefault.jpg" } } } },
+    { id: { videoId: "PHe0bXAIuk0" }, snippet: { title: "How the Economic Machine Works by Ray Dalio", channelTitle: "Principles by Ray Dalio", thumbnails: { high: { url: "https://img.youtube.com/vi/PHe0bXAIuk0/hqdefault.jpg" } } } },
   ],
   "Health & Wellness": [
-    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: The Science of Sleep and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://i.ytimg.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
+    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: The Science of Sleep and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://img.youtube.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
   ],
   "Artificial Intelligence": [
-    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: The Future of AI and Humanity", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
-    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: AI Will Change Everything", channelTitle: "Acquired", thumbnails: { high: { url: "https://i.ytimg.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
+    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: The Future of AI and Humanity", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://img.youtube.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
+    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: AI Will Change Everything", channelTitle: "Acquired", thumbnails: { high: { url: "https://img.youtube.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
   ],
 };
 

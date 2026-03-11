@@ -127,12 +127,21 @@ const Dashboard = () => {
     }
   };
 
+  const [isFirestoreBlocked, setIsFirestoreBlocked] = useState(false);
+
   const loadFeed = async (pg = 1) => {
     if (!user || isFetching) return;
     try {
       setIsFetching(true);
       pg === 1 ? setLoading(true) : setLoadingMore(true);
-      const snap = await getDoc(doc(db, "users", user.uid));
+      
+      const snap = await getDoc(doc(db, "users", user.uid)).catch(e => {
+        if (e.message?.includes("blocked-by-client") || e.code === "unavailable" || e.name === "FirebaseError") {
+          setIsFirestoreBlocked(true);
+        }
+        throw e;
+      });
+
       if (!snap.exists()) return;
       const d = snap.data();
       setUsername(d.name || user.displayName || "");
@@ -143,7 +152,9 @@ const Dashboard = () => {
       const clean = (res || []).filter((i: any) => i?.id?.videoId && i?.snippet);
       if (!clean.length) { setHasMore(false); return; }
       setFeed(p => { const m = new Map(); [...p, ...clean].forEach((v: any) => m.set(v.id.videoId, v)); return Array.from(m.values()); });
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+      console.error("Dashboard Load Error:", e);
+    }
     finally { setLoading(false); setLoadingMore(false); setIsFetching(false); }
   };
 
@@ -180,6 +191,14 @@ const Dashboard = () => {
       <NavBar username={username} onLogout={handleLogout} onResetTopics={handleResetTopics} />
 
       <main className="max-w-[1600px] mx-auto px-8 md:px-12 pt-32 pb-20">
+        
+        {/* Ad-Blocker / Connection Warning */}
+        {isFirestoreBlocked && (
+          <div className="mb-8 p-4 bg-red-500/20 border border-red-500/50 text-red-200 text-[14px] flex items-center justify-between">
+            <p><strong>System Alert:</strong> Your browser or ad-blocker is blocking Firebase. This will hide your topics and break the cache. Please disable ad-blockers for this site.</p>
+            <button onClick={() => window.location.reload()} className="underline font-mono uppercase text-[12px] hover:text-white">Retry Connection</button>
+          </div>
+        )}
         
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-white/20 pb-12">
