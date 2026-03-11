@@ -1,45 +1,98 @@
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
-
 const BASE_URL = "https://www.googleapis.com/youtube/v3/search";
+const CACHE_TTL_MS = 23 * 60 * 60 * 1000; // 23 hours
 
-// High-quality fallback data in case the YouTube API hits its daily quota limit (very common on the free tier)
-const FALLBACK_PODCASTS = [
-  { id: { videoId: "h1sOuxWIsfE" }, snippet: { title: "Naval Ravikant on Happiness, Reducing Anxiety, Crypto, Fasting, Startups, and Aliens", channelTitle: "Lex Fridman", description: "Naval Ravikant is an entrepreneur, philosopher, and investor.", thumbnails: { high: { url: "https://i.ytimg.com/vi/h1sOuxWIsfE/hqdefault.jpg" } } } },
-  { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Dr. Andrew Huberman: Maximize Productivity, Physical & Mental Health", channelTitle: "Huberman Lab", description: "Dr. Andrew Huberman discusses science-based tools for maximizing focus and health.", thumbnails: { high: { url: "https://i.ytimg.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
-  { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: OpenAI CEO on GPT-4, ChatGPT, and the Future of AI", channelTitle: "Lex Fridman", description: "Sam Altman is the CEO of OpenAI, the company behind ChatGPT.", thumbnails: { high: { url: "https://i.ytimg.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
-  { id: { videoId: "vIorTEYErCg" }, snippet: { title: "NVIDIA CEO Jensen Huang: The AI Revolution", channelTitle: "Acquired", description: "Jensen Huang discusses building NVIDIA into a trillion-dollar company.", thumbnails: { high: { url: "https://i.ytimg.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
-  { id: { videoId: "XkWJ2-l-qxk" }, snippet: { title: "Nikhil Kamath on Building Zerodha & The Future of India", channelTitle: "WTF is", description: "Deep dive into financial markets and tech startups.", thumbnails: { high: { url: "https://i.ytimg.com/vi/XkWJ2-l-qxk/hqdefault.jpg" } } } },
-  { id: { videoId: "U_A_BwIapU4" }, snippet: { title: "Chris Williamson: How To Be 1% Better Every Day", channelTitle: "Modern Wisdom", description: "Practical life hacks and productivity routines.", thumbnails: { high: { url: "https://i.ytimg.com/vi/U_A_BwIapU4/hqdefault.jpg" } } } },
-];
+// ─── Curated per-topic fallback (used only if quota is truly exhausted & no cache) ───
+const TOPIC_FALLBACKS: Record<string, any[]> = {
+  default: [
+    { id: { videoId: "h1sOuxWIsfE" }, snippet: { title: "Naval Ravikant on Happiness, Startups, and Meaning", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/h1sOuxWIsfE/hqdefault.jpg" } } } },
+    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: Tools for Better Focus and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://i.ytimg.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
+    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: OpenAI CEO on GPT-4 and the Future of AI", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
+    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: The AI Revolution and NVIDIA", channelTitle: "Acquired", thumbnails: { high: { url: "https://i.ytimg.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
+  ],
+  "Technology": [
+    { id: { videoId: "WqYBx2gB6vA" }, snippet: { title: "How AI is Changing Software Development", channelTitle: "Fireship", thumbnails: { high: { url: "https://i.ytimg.com/vi/WqYBx2gB6vA/hqdefault.jpg" } } } },
+    { id: { videoId: "kCc8FmEb1nY" }, snippet: { title: "Let's build GPT: from scratch, in code, step by step", channelTitle: "Andrej Karpathy", thumbnails: { high: { url: "https://i.ytimg.com/vi/kCc8FmEb1nY/hqdefault.jpg" } } } },
+  ],
+  "Business": [
+    { id: { videoId: "U_A_BwIapU4" }, snippet: { title: "How To Build a Business From Scratch", channelTitle: "Modern Wisdom", thumbnails: { high: { url: "https://i.ytimg.com/vi/U_A_BwIapU4/hqdefault.jpg" } } } },
+    { id: { videoId: "XkWJ2-l-qxk" }, snippet: { title: "Nikhil Kamath on Building Zerodha & Startups", channelTitle: "WTF is", thumbnails: { high: { url: "https://i.ytimg.com/vi/XkWJ2-l-qxk/hqdefault.jpg" } } } },
+  ],
+  "Finance": [
+    { id: { videoId: "PHe0bXAIuk0" }, snippet: { title: "How the Economic Machine Works by Ray Dalio", channelTitle: "Principles by Ray Dalio", thumbnails: { high: { url: "https://i.ytimg.com/vi/PHe0bXAIuk0/hqdefault.jpg" } } } },
+  ],
+  "Health & Wellness": [
+    { id: { videoId: "n3Xv_g3g-mA" }, snippet: { title: "Andrew Huberman: The Science of Sleep and Health", channelTitle: "Huberman Lab", thumbnails: { high: { url: "https://i.ytimg.com/vi/n3Xv_g3g-mA/hqdefault.jpg" } } } },
+  ],
+  "Artificial Intelligence": [
+    { id: { videoId: "L_Guz73e6fw" }, snippet: { title: "Sam Altman: The Future of AI and Humanity", channelTitle: "Lex Fridman", thumbnails: { high: { url: "https://i.ytimg.com/vi/L_Guz73e6fw/hqdefault.jpg" } } } },
+    { id: { videoId: "vIorTEYErCg" }, snippet: { title: "Jensen Huang: AI Will Change Everything", channelTitle: "Acquired", thumbnails: { high: { url: "https://i.ytimg.com/vi/vIorTEYErCg/hqdefault.jpg" } } } },
+  ],
+};
 
+// ─── Fetch from YouTube API with Firestore caching ───
+const fetchWithCache = async (topic: string): Promise<any[]> => {
+  const cacheKey = `youtubeCache_${topic.toLowerCase().replace(/\s+/g, "_")}`;
+  const cacheRef = doc(db, "youtubeCache", cacheKey);
+
+  // 1. Check Firestore cache first
+  try {
+    const cached = await getDoc(cacheRef);
+    if (cached.exists()) {
+      const { items, fetchedAt } = cached.data();
+      const age = Date.now() - fetchedAt;
+      if (age < CACHE_TTL_MS && items?.length > 0) {
+        console.log(`[Cache HIT] ${topic}`);
+        return items;
+      }
+    }
+  } catch (e) {
+    // Cache read failed — continue to live fetch
+  }
+
+  // 2. Fetch from YouTube API
+  if (!API_KEY) {
+    return TOPIC_FALLBACKS[topic] || TOPIC_FALLBACKS["default"];
+  }
+
+  try {
+    const query = encodeURIComponent(`${topic} podcast`);
+    const url = `${BASE_URL}?part=snippet&type=video&videoDuration=long&maxResults=8&q=${query}&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.error || !data.items?.length) {
+      console.warn(`[YouTube] Error or empty for "${topic}" — using cache/fallback`);
+      return TOPIC_FALLBACKS[topic] || TOPIC_FALLBACKS["default"];
+    }
+
+    // 3. Save to Firestore cache
+    try {
+      await setDoc(cacheRef, { items: data.items, fetchedAt: Date.now(), topic });
+    } catch (e) {
+      // Cache write failed — not critical
+    }
+
+    console.log(`[Live] fetched ${data.items.length} results for "${topic}"`);
+    return data.items;
+
+  } catch (e) {
+    console.error(`[YouTube] fetch failed for "${topic}":`, e);
+    return TOPIC_FALLBACKS[topic] || TOPIC_FALLBACKS["default"];
+  }
+};
+
+// ─── Main export: fetch one topic at a time, rotating by page ───
 export const fetchPodcastsByInterest = async (
   interests: string[],
   page: number
-) => {
-  try {
-    if (!API_KEY) {
-      console.warn("YouTube API KEY missing. Falling back to default data.");
-      return FALLBACK_PODCASTS;
-    }
+): Promise<any[]> => {
+  if (!interests.length) return TOPIC_FALLBACKS["default"];
 
-    const query = interests.join(" OR ") + " podcast";
-
-    const url = `${BASE_URL}?part=snippet&type=video&videoDuration=long&maxResults=12&q=${encodeURIComponent(
-      query
-    )}&key=${API_KEY}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.error) {
-      console.warn(`YouTube API Error: ${data.error.message}. Using fallback data.`);
-      return FALLBACK_PODCASTS;
-    }
-
-    return data.items && data.items.length > 0 ? data.items : FALLBACK_PODCASTS;
-
-  } catch (error) {
-    console.error("Podcast fetch failed, using fallback:", error);
-    return FALLBACK_PODCASTS;
-  }
+  // rotate through topics as the user pages through the feed
+  const topic = interests[(page - 1) % interests.length];
+  return fetchWithCache(topic);
 };
