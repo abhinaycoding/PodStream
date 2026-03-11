@@ -21,19 +21,35 @@ export const AuthProvider = ({ children }: any) => {
     await signInWithRedirect(auth, provider);
   };
 
-  // Handle the redirect result when the user returns after Google sign-in
-  useEffect(() => {
-    getRedirectResult(auth).catch(() => {});
-  }, []);
-
   const logout = async () => {
     await signOut(auth);
   };
 
   useEffect(() => {
+    let resolved = false;
+
+    // First, check for the redirect result (user returning from Google)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setUser(result.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        resolved = true;
+      });
+
+    // Then, listen for any auth state changes
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setAuthLoading(false);
+      // Only stop loading once both the redirect check and auth state are done
+      if (resolved) {
+        setAuthLoading(false);
+      } else {
+        // Small delay to let getRedirectResult finish first
+        setTimeout(() => setAuthLoading(false), 500);
+      }
     });
 
     return () => unsub();
