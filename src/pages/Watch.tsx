@@ -1,0 +1,455 @@
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Maximize, X, PenLine, Save, Zap, ChevronRight } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
+
+// ══ AI SIGNAL SIMULATOR ══
+// Generates believable, premium AI insights for any podcast
+const AI_TOPICS = [
+  { label: "ARTIFICIAL INTELLIGENCE", theme: "cognitive systems" },
+  { label: "STRATEGY & CAPITAL", theme: "capital allocation" },
+  { label: "HUMAN PERFORMANCE", theme: "neurological optimization" },
+  { label: "SYSTEMS DESIGN", theme: "complex architecture" },
+  { label: "PHILOSOPHY", theme: "first principles" },
+];
+
+const TAKEAWAY_POOLS = [
+  "The nature of intelligence is inseparable from the environment in which it operates.",
+  "Capital is not money — it is organized human attention applied over time.",
+  "Most cognitive limitations are self-imposed constraints, not biological ceilings.",
+  "Compounding applies to knowledge, relationships, and reputation as much as it does to finance.",
+  "The most valuable skill in the next decade will be the ability to learn rapidly and unlearn gracefully.",
+  "Systems fail not from a single catastrophic event, but from the accumulation of small unchecked assumptions.",
+  "Clarity of purpose is the highest-leverage variable in any organization's performance.",
+  "The boundary between human and machine cognition will be defined by context, not capability.",
+  "Discipline creates freedom — constraint forced upon external systems produces the most extraordinary outputs.",
+  "The signal is always present. The challenge is filtering out the noise of convention.",
+];
+
+const CONCEPT_POOLS = [
+  "SIGNAL THEORY", "EMERGENT SYSTEMS", "META-COGNITION", "CAPITAL STACK",
+  "NEURAL PLASTICITY", "TEMPORAL ARBITRAGE", "FIRST PRINCIPLES", "NETWORK EFFECTS",
+  "COGNITIVE LOAD", "COMPOUNDING RETURNS", "ASYMMETRIC BETS", "ADVERSARIAL THINKING",
+  "BEHAVIORAL LOOP", "DECISION HYGIENE", "ZERO-SUM FALLACY", "LATENT SPACE",
+];
+
+const MARKER_POOLS = [
+  { time: "03:42", label: "Opening Thesis" },
+  { time: "12:15", label: "Core Argument" },
+  { time: "28:50", label: "Key Inflection Point" },
+  { time: "41:20", label: "Framework Introduced" },
+  { time: "55:08", label: "Major Insight" },
+  { time: "1:12:30", label: "Contrarian Take" },
+  { time: "1:34:00", label: "Final Synthesis" },
+];
+
+const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
+
+const generateSignal = () => ({
+  topic: AI_TOPICS[Math.floor(Math.random() * AI_TOPICS.length)],
+  takeaways: shuffle(TAKEAWAY_POOLS).slice(0, 4),
+  concepts: shuffle(CONCEPT_POOLS).slice(0, 8),
+  markers: shuffle(MARKER_POOLS).slice(0, 4).sort((a, b) => a.time.localeCompare(b.time)),
+});
+
+// ══ AI SIGNAL SCAN ANIMATION ══
+const ScanAnimation = ({ onDone }: { onDone: () => void }) => {
+  useEffect(() => {
+    const t = setTimeout(onDone, 3200);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-8 gap-8 select-none">
+      <div className="w-full relative h-[2px] bg-white/5 overflow-hidden">
+        <motion.div
+          className="absolute top-0 left-0 h-full bg-white"
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 2.8, ease: "easeInOut" }}
+        />
+      </div>
+      <div className="w-full flex flex-col gap-3">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="h-[1px] bg-white/10"
+            initial={{ width: "0%", opacity: 0 }}
+            animate={{ width: `${60 + Math.random() * 40}%`, opacity: 1 }}
+            transition={{ delay: i * 0.3, duration: 0.8, ease: "easeOut" }}
+          />
+        ))}
+      </div>
+      <div className="flex flex-col items-center gap-3 text-center">
+        <motion.div
+          className="w-2 h-2 bg-white"
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ repeat: Infinity, duration: 1.2 }}
+        />
+        <p className="text-[11px] font-mono text-white/30 uppercase tracking-widest">
+          Analysing signal...
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ══ AI SIGNAL RESULTS ══
+const SignalResults = ({
+  signal,
+}: {
+  signal: ReturnType<typeof generateSignal>;
+}) => (
+  <div className="flex-1 overflow-y-auto scrollbar-hide">
+    {/* Topic Tag */}
+    <div className="px-6 py-4 border-b border-white/10">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-1">
+        Dominant Signal
+      </span>
+      <span className="text-[13px] font-mono font-medium text-white tracking-widest uppercase">
+        {signal.topic.label}
+      </span>
+    </div>
+
+    {/* Key Takeaways */}
+    <div className="px-6 py-5 border-b border-white/10">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
+        Key Takeaways
+      </span>
+      <ol className="flex flex-col gap-5">
+        {signal.takeaways.map((t, i) => (
+          <motion.li
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.12 }}
+            className="flex gap-4 items-start group"
+          >
+            <span className="font-mono text-[11px] text-white/20 mt-0.5 shrink-0">
+              0{i + 1}
+            </span>
+            <p className="text-[13px] text-white/70 leading-relaxed font-sans group-hover:text-white transition-colors">
+              {t}
+            </p>
+          </motion.li>
+        ))}
+      </ol>
+    </div>
+
+    {/* Core Concepts */}
+    <div className="px-6 py-5 border-b border-white/10">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
+        Core Concepts
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {signal.concepts.map((c, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 + i * 0.06 }}
+            className="px-3 py-1.5 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:border-white/40 hover:text-white transition-all cursor-default"
+          >
+            {c}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+
+    {/* Jump-to Markers */}
+    <div className="px-6 py-5">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
+        Timestamp Markers
+      </span>
+      <div className="flex flex-col gap-2">
+        {signal.markers.map((m, i) => (
+          <motion.button
+            key={i}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 + i * 0.1 }}
+            className="group flex items-center gap-4 py-3 border-b border-white/5 hover:border-white/20 transition-colors text-left w-full"
+          >
+            <span className="font-mono text-[12px] text-white/30 group-hover:text-white transition-colors shrink-0">
+              {m.time}
+            </span>
+            <span className="font-sans text-[13px] text-white/60 group-hover:text-white transition-colors">
+              {m.label}
+            </span>
+            <ChevronRight
+              size={14}
+              className="ml-auto text-white/0 group-hover:text-white/40 transition-all -translate-x-2 group-hover:translate-x-0"
+            />
+          </motion.button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// ══ MAIN WATCH COMPONENT ══
+const Watch = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Panel state: null = closed, "notes" = notes, "signal" = ai
+  const [panel, setPanel] = useState<null | "notes" | "signal">(null);
+  const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [signal, setSignal] = useState<ReturnType<typeof generateSignal> | null>(null);
+
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") navigate(-1);
+    };
+    document.addEventListener("keydown", handleEsc, true);
+    return () => document.removeEventListener("keydown", handleEsc, true);
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      if (!user || !id) return;
+      try {
+        const d = await getDoc(doc(db, "notes", `${user.uid}_${id}`));
+        if (d.exists() && d.data().content) {
+          setNotes(d.data().content);
+          setLastSaved(d.data().updatedAt?.toDate() || new Date());
+        }
+      } catch (e) {
+        console.error("Error fetching notes:", e);
+      }
+    };
+    fetchNotes();
+  }, [user, id]);
+
+  const handleNotesChange = (val: string) => {
+    setNotes(val);
+    setSaving(true);
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      if (!user || !id) return;
+      try {
+        const now = new Date();
+        await setDoc(
+          doc(db, "notes", `${user.uid}_${id}`),
+          { userId: user.uid, videoId: id, content: val, updatedAt: now },
+          { merge: true }
+        );
+        setLastSaved(now);
+      } catch (e) {
+        console.error("Error saving notes:", e);
+      } finally {
+        setSaving(false);
+      }
+    }, 1500);
+  };
+
+  const openFullscreen = () => {
+    const iframe = document.getElementById("yt-player") as HTMLIFrameElement | null;
+    if (!iframe) return;
+    const req =
+      iframe.requestFullscreen ||
+      (iframe as any).webkitRequestFullscreen ||
+      (iframe as any).mozRequestFullScreen;
+    if (req) req.call(iframe);
+  };
+
+  const handleSignalOpen = () => {
+    if (panel === "signal") { setPanel(null); return; }
+    setPanel("signal");
+    if (!signal) {
+      setScanning(true);
+    }
+  };
+
+  const handleScanDone = useCallback(() => {
+    setScanning(false);
+    setSignal(generateSignal());
+  }, []);
+
+  const showPanel = panel !== null;
+  const modeLabel = panel === "signal" ? "Signal Mode" : panel === "notes" ? "Study Mode" : "Cinema Mode";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 bg-black z-[9999] flex flex-col overflow-hidden"
+    >
+      {/* TOP BAR */}
+      <div className="w-full px-8 py-5 flex items-center justify-between border-b border-white/10 shrink-0 select-none">
+        <button
+          onClick={() => navigate(-1)}
+          className="group flex items-center gap-3 text-[14px] font-medium text-white/50 hover:text-white transition-colors"
+        >
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Back
+        </button>
+        <div className="flex items-center gap-4">
+          <span className="hidden md:block text-[11px] font-mono uppercase tracking-widest text-white/20">
+            {modeLabel}
+          </span>
+          <button
+            onClick={openFullscreen}
+            title="Enter Fullscreen"
+            className="p-3 border border-white/10 hover:border-white/40 hover:bg-white/5 transition-all text-white/50 hover:text-white"
+          >
+            <Maximize size={16} />
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="p-3 border border-white/10 hover:border-white/40 hover:bg-white/5 transition-all text-white/50 hover:text-white"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* SPLIT SCREEN CONTAINER */}
+      <div className="flex-1 flex min-h-0 w-full relative">
+        {/* VIDEO (Left/Full) */}
+        <motion.div
+          animate={{ width: showPanel ? "65%" : "100%" }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          className="h-full flex flex-col items-center justify-center px-6 md:px-12 py-6 shrink-0"
+        >
+          <motion.div
+            animate={{ maxWidth: showPanel ? "100%" : "75rem" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="w-full flex justify-center items-center"
+          >
+            <div
+              className="relative w-full border border-white/10 bg-black overflow-hidden mx-auto"
+              style={{
+                aspectRatio: "16 / 9",
+                maxHeight: "calc(100vh - 180px)",
+                maxWidth: "calc((100vh - 180px) * 16 / 9)",
+              }}
+            >
+              <iframe
+                id="yt-player"
+                src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&fs=1`}
+                className="absolute inset-0 w-full h-full"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="PodStream Video Player"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* RIGHT PANEL */}
+        <AnimatePresence>
+          {showPanel && (
+            <motion.div
+              initial={{ width: "0%", opacity: 0, x: 50 }}
+              animate={{ width: "35%", opacity: 1, x: 0 }}
+              exit={{ width: "0%", opacity: 0, x: 50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 180 }}
+              className="h-full border-l border-white/10 bg-[#050505] flex flex-col shrink-0 overflow-hidden"
+              style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}
+            >
+              {/* Panel Tab Bar */}
+              <div className="flex border-b border-white/10 shrink-0 select-none">
+                <button
+                  onClick={() => setPanel("notes")}
+                  className={`flex items-center gap-2.5 px-6 py-4 text-[11px] font-mono uppercase tracking-widest border-r border-white/10 transition-colors
+                    ${panel === "notes" ? "bg-white text-black" : "text-white/40 hover:text-white hover:bg-white/5"}`}
+                >
+                  <PenLine size={13} /> Notes
+                </button>
+                <button
+                  onClick={() => setPanel("signal")}
+                  className={`flex items-center gap-2.5 px-6 py-4 text-[11px] font-mono uppercase tracking-widest transition-colors
+                    ${panel === "signal" ? "bg-white text-black" : "text-white/40 hover:text-white hover:bg-white/5"}`}
+                >
+                  <Zap size={13} /> AI Signal
+                </button>
+
+                {/* Save indicator in header (for notes tab only) */}
+                {panel === "notes" && (
+                  <div className="ml-auto flex items-center px-4 text-[10px] font-mono tracking-widest uppercase">
+                    {saving ? (
+                      <span className="text-white/30 flex items-center gap-1.5">
+                        <span className="w-1 h-1 bg-white/30 animate-pulse inline-block" /> Saving
+                      </span>
+                    ) : lastSaved ? (
+                      <span className="text-white/20 flex items-center gap-1.5">
+                        <Save size={11} /> Saved
+                      </span>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+              {/* NOTES CONTENT */}
+              {panel === "notes" && (
+                <textarea
+                  value={notes}
+                  onChange={(e) => handleNotesChange(e.target.value)}
+                  placeholder={"Start typing your insights here...\n\nNotes auto-save instantly."}
+                  className="flex-1 w-full bg-transparent resize-none outline-none p-6 text-[14px] leading-relaxed text-white/80 placeholder:text-white/20 font-sans"
+                  spellCheck={false}
+                />
+              )}
+
+              {/* SIGNAL CONTENT */}
+              {panel === "signal" && (
+                <>
+                  {scanning && <ScanAnimation onDone={handleScanDone} />}
+                  {!scanning && signal && <SignalResults signal={signal} />}
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* BOTTOM BAR */}
+      <div className="w-full px-8 py-4 flex items-center justify-between border-t border-white/10 shrink-0 select-none">
+        <span className="text-[11px] font-mono text-white/20 uppercase tracking-widest hidden md:block">
+          Press <span className="text-white/40">ESC</span> to exit ·{" "}
+          <span className="text-white/40">FS</span> for fullscreen
+        </span>
+
+        <div className="flex items-center gap-3 ml-auto md:ml-0">
+          {/* Notes Button */}
+          <button
+            onClick={() => setPanel(panel === "notes" ? null : "notes")}
+            className={`flex items-center gap-2.5 px-5 py-2.5 border transition-all text-[11px] font-mono uppercase tracking-widest
+              ${panel === "notes"
+                ? "bg-white text-black border-white"
+                : "bg-transparent text-white border-white/20 hover:border-white hover:bg-white/5"}`}
+          >
+            <PenLine size={13} />
+            Notes
+          </button>
+
+          {/* AI Signal Button */}
+          <button
+            onClick={handleSignalOpen}
+            className={`flex items-center gap-2.5 px-5 py-2.5 border transition-all text-[11px] font-mono uppercase tracking-widest
+              ${panel === "signal"
+                ? "bg-white text-black border-white"
+                : "bg-transparent text-white border-white/20 hover:border-white hover:bg-white/5"}`}
+          >
+            <Zap size={13} />
+            AI Signal
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Watch;
