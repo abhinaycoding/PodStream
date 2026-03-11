@@ -28,3 +28,4 @@ dist
 *.sln
 *.sw?
 .vercel
+.env*.local
