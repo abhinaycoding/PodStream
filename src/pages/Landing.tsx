@@ -48,8 +48,8 @@ const Landing = () => {
   return (
     <FluidGlass mode="lens">
       <div className="w-full min-h-screen relative z-10 font-sans selection:bg-white selection:text-black">
-        {/* Top-down shadow gradient to ground the content */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/80 pointer-events-none -z-10" />
+        {/* Transparent overlay to not block 3D visuals */}
+        <div className="absolute inset-0 bg-transparent pointer-events-none -z-10" />
 
       {/* ══ BRUTALIST PURE-TEXT NAVBAR ══ */}
       <header className="fixed top-0 left-0 right-0 z-50 pt-8 pb-4 mix-blend-difference">
@@ -99,9 +99,9 @@ const Landing = () => {
               Matching the exact layout from the user's reference:
               "We defy the disciplines \n to mobilize your data"
             */}
-            <h1 className="font-sans text-[#f4f4f5] tracking-tight leading-[0.95] text-[clamp(4rem,10vw,11rem)]">
+            <h1 className="font-sans text-[#f4f4f5] tracking-tight leading-[0.9] text-[clamp(4.5rem,12vw,13rem)] premium-text-glow">
               <span className="font-medium block">We curate the audio</span>
-              <span className="font-normal italic block pr-4">to amplify your mind</span>
+              <span className="font-normal italic block pr-4 bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">to amplify your mind</span>
             </h1>
           </motion.div>
 
@@ -137,18 +137,44 @@ const Landing = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {FEATURES.map((f, i) => (
-              <div key={f.title} className="flex flex-col gap-6 group">
-                <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                  <f.icon size={20} strokeWidth={1.5} className="group-hover:stroke-black transition-colors duration-300" />
+          <div className="bento-container">
+            {/* Featured Card */}
+            <div className="col-span-1 md:col-span-2 row-span-2 glass-panel glass-border p-10 flex flex-col justify-between group overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+               <div className="relative z-10">
+                 <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
+                   <Brain size={28} className="text-white" />
+                 </div>
+                 <h4 className="font-sans font-medium text-white text-[32px] mb-4 tracking-tight leading-none">{FEATURES[0].title}</h4>
+                 <p className="text-white/60 text-[18px] leading-relaxed font-sans max-w-sm">{FEATURES[0].body}</p>
+               </div>
+               <div className="relative z-10 flex items-center gap-2 text-white/40 font-mono text-sm uppercase tracking-widest group-hover:text-white transition-colors">
+                 Explore Engine <ArrowUpRight size={14} />
+               </div>
+            </div>
+
+            {/* Other Cards */}
+            {FEATURES.slice(1).map((f, i) => (
+              <div key={f.title} className="col-span-1 glass-panel glass-border p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center transition-colors group-hover:bg-white/20">
+                  <f.icon size={20} className="text-white/70 group-hover:text-white" />
                 </div>
                 <div>
-                  <h4 className="font-sans font-medium text-white text-[22px] mb-3 tracking-tight">{f.title}</h4>
-                  <p className="text-white/60 text-[16px] leading-[1.6] font-sans">{f.body}</p>
+                  <h4 className="font-sans font-medium text-white text-[20px] mb-2 tracking-tight">{f.title}</h4>
+                  <p className="text-white/50 text-[15px] leading-relaxed font-sans">{f.body}</p>
                 </div>
               </div>
             ))}
+
+            <div className="col-span-1 md:col-span-2 glass-panel glass-border p-8 flex items-center justify-between group cursor-pointer bg-white/5 hover:bg-white/10 transition-colors">
+              <div>
+                <h4 className="font-sans font-medium text-white text-[22px] tracking-tight">Ready to dive in?</h4>
+                <p className="text-white/40 text-[14px] font-mono uppercase tracking-widest mt-1">Join 50k+ listeners</p>
+              </div>
+              <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                <ArrowUpRight size={20} />
+              </div>
+            </div>
           </div>
         </div>
       </section>

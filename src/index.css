@@ -192,6 +192,42 @@
   background-size: 200% 100%; animation: shimmer 1.7s infinite;
 }
 
+/* ══════════ PREMIUM UTILITIES ══════════ */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-border {
+  position: relative;
+}
+.glass-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02), rgba(255,255,255,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.bento-container {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(160px, auto);
+}
+
+.premium-text-glow {
+  text-shadow: 0 0 40px rgba(122, 105, 249, 0.3), 0 0 80px rgba(242, 99, 120, 0.2);
+}
+
 @keyframes meshShift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.05) translate(-2%, 2%); } }
 @keyframes wavepulse { 0%,100% { height: 6px; opacity: 0.45; } 50% { height: 18px; opacity: 1; } }
 @keyframes marqueeAnim { from { transform: translateX(0); } to { transform: translateX(-50%); } }

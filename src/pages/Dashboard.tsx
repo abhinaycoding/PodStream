@@ -246,23 +246,30 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => navigate(`/watch/${featured.id.videoId}`)}
-              className="group relative w-full overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-500 cursor-pointer"
+              className="group relative w-full overflow-hidden glass-panel glass-border hover:border-white/40 transition-all duration-500 cursor-pointer"
               style={{ aspectRatio: "16/6" }}
             >
               <img
                 src={thumb(featured.id.videoId, featured.snippet.thumbnails?.high?.url)}
                 alt={featured.snippet.title}
-                className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-80"
+                className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-40 group-hover:opacity-70 scale-105 group-hover:scale-100"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-10 max-w-[60%]">
-                <span className="text-[12px] font-mono text-white/40 uppercase tracking-widest mb-4 block">{featured.snippet.channelTitle}</span>
-                <h3 className="font-sans font-medium text-[clamp(1.2rem,3vw,2.5rem)] text-white leading-tight mb-6 line-clamp-2">{featured.snippet.title}</h3>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-3 text-[14px] font-medium text-white">
-                    <Play size={18} className="fill-white" /> Play Now
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-12 max-w-[70%] z-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-mono text-white/60 uppercase tracking-widest border border-white/10">
+                    Trending Now
                   </span>
-                  <ArrowUpRight className="text-white/0 group-hover:text-white transition-all duration-300 -translate-x-4 translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0" size={24} />
+                  <span className="text-[12px] font-mono text-white/40 uppercase tracking-widest">{featured.snippet.channelTitle}</span>
+                </div>
+                <h3 className="font-sans font-medium text-[clamp(1.5rem,4vw,3.5rem)] text-white leading-[1.1] mb-8 line-clamp-2 premium-text-glow">{featured.snippet.title}</h3>
+                <div className="flex items-center gap-6">
+                  <button className="flex items-center gap-3 px-8 py-4 bg-white text-black font-medium text-[14px] tracking-tight hover:bg-neutral-200 transition-colors rounded-full">
+                    <Play size={18} className="fill-black" /> Play Episode
+                  </button>
+                  <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    <Heart size={20} />
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -284,26 +291,27 @@ const Dashboard = () => {
                 >
                   <div
                     onClick={() => navigate(`/watch/${v.id.videoId}`)}
-                    className="relative w-full aspect-video overflow-hidden border border-white/10 group-hover:border-white/30 transition-all duration-500 cursor-pointer"
+                    className="relative w-full aspect-video overflow-hidden glass-panel glass-border group-hover:border-white/40 transition-all duration-500 cursor-pointer"
                   >
                     <img
                       src={thumb(v.id.videoId, v.snippet.thumbnails?.high?.url)}
                       alt={v.snippet.title}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-40 group-hover:opacity-90 transition-all duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-14 h-14 border border-white flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <Play size={24} className="fill-white ml-1" />
-                      </div>
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform">
+                       <div className="flex items-center gap-2">
+                         <Play size={14} className="text-white fill-white" />
+                         <span className="text-[10px] font-mono text-white/80 uppercase tracking-widest">Available now</span>
+                       </div>
                     </div>
                   </div>
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4 px-2">
                     <div 
-                      className="flex flex-col gap-1 cursor-pointer flex-1"
+                      className="flex flex-col gap-2 cursor-pointer flex-1"
                       onClick={() => navigate(`/watch/${v.id.videoId}`)}
                     >
-                      <span className="text-[12px] font-mono text-white/40 uppercase tracking-widest">{v.snippet.channelTitle}</span>
-                      <h3 className="font-sans font-medium text-[18px] text-white leading-tight group-hover:underline underline-offset-4 line-clamp-2">{v.snippet.title}</h3>
+                      <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest group-hover:text-white/60 transition-colors">{v.snippet.channelTitle}</span>
+                      <h3 className="font-sans font-medium text-[17px] text-white/80 group-hover:text-white leading-snug transition-colors line-clamp-2">{v.snippet.title}</h3>
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); toggleFav(v); }}

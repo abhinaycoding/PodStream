@@ -16,22 +16,21 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.5.0",
+    "@react-three/drei": "9.106.0",
+    "@react-three/fiber": "8.13.1",
     "@tanstack/react-query": "^5.28.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.8.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.563.0",
-    "maath": "^0.10.8",
     "next-themes": "^0.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.183.2"
+    "three": "0.166.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
@@ -40,5 +39,8 @@
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "vite": "^5.4.0"
+  },
+  "overrides": {
+    "three": "$three"
   }
 }
