@@ -5,6 +5,7 @@ import { ArrowLeft, Maximize, X, PenLine, Save, Zap, ChevronRight } from "lucide
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
+import { useStreaming } from "@/hooks/useStreaming";
 
 // ══ AI SIGNAL SIMULATOR ══
 // Generates believable, premium AI insights for any podcast
@@ -97,96 +98,38 @@ const ScanAnimation = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-// ══ AI SIGNAL RESULTS ══
-const SignalResults = ({
-  signal,
-}: {
-  signal: ReturnType<typeof generateSignal>;
-}) => (
-  <div className="flex-1 overflow-y-auto scrollbar-hide">
-    {/* Topic Tag */}
-    <div className="px-6 py-4 border-b border-white/10">
-      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-1">
-        Dominant Signal
+// ══ NEURAL SYNTHESIS STREAMING ══
+const NeuralSynthesis = ({ data, isStreaming }: { data: string, isStreaming: boolean }) => (
+  <div className="flex-1 overflow-y-auto p-8 font-sans selection:bg-blue-500/30">
+    <div className="flex items-center gap-3 mb-10">
+      <div className={`w-2 h-2 rounded-full ${isStreaming ? 'bg-blue-500 animate-pulse' : 'bg-green-500'}`} />
+      <span className="text-[10px] font-mono tracking-[0.4em] text-white/40 uppercase">
+        {isStreaming ? "Neural Layer Active" : "Synthesis Complete"}
       </span>
-      <span className="text-[13px] font-mono font-medium text-white tracking-widest uppercase">
-        {signal.topic.label}
-      </span>
+    </div>
+    
+    <div className="text-[17px] leading-[1.8] text-white/80 whitespace-pre-line">
+      {data}
+      {isStreaming && (
+        <motion.span 
+          animate={{ opacity: [1, 0, 1] }} 
+          transition={{ repeat: Infinity, duration: 0.8 }}
+          className="inline-block w-[2px] h-[18px] bg-blue-500 ml-1 translate-y-[3px]"
+        />
+      )}
     </div>
 
-    {/* Key Takeaways */}
-    <div className="px-6 py-5 border-b border-white/10">
-      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
-        Key Takeaways
-      </span>
-      <ol className="flex flex-col gap-5">
-        {signal.takeaways.map((t, i) => (
-          <motion.li
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.12 }}
-            className="flex gap-4 items-start group"
-          >
-            <span className="font-mono text-[11px] text-white/20 mt-0.5 shrink-0">
-              0{i + 1}
-            </span>
-            <p className="text-[13px] text-white/70 leading-relaxed font-sans group-hover:text-white transition-colors">
-              {t}
-            </p>
-          </motion.li>
-        ))}
-      </ol>
-    </div>
-
-    {/* Core Concepts */}
-    <div className="px-6 py-5 border-b border-white/10">
-      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
-        Core Concepts
-      </span>
-      <div className="flex flex-wrap gap-2">
-        {signal.concepts.map((c, i) => (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 + i * 0.06 }}
-            className="px-3 py-1.5 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:border-white/40 hover:text-white transition-all cursor-default"
-          >
-            {c}
-          </motion.span>
-        ))}
-      </div>
-    </div>
-
-    {/* Jump-to Markers */}
-    <div className="px-6 py-5">
-      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
-        Timestamp Markers
-      </span>
-      <div className="flex flex-col gap-2">
-        {signal.markers.map((m, i) => (
-          <motion.button
-            key={i}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 + i * 0.1 }}
-            className="group flex items-center gap-4 py-3 border-b border-white/5 hover:border-white/20 transition-colors text-left w-full"
-          >
-            <span className="font-mono text-[12px] text-white/30 group-hover:text-white transition-colors shrink-0">
-              {m.time}
-            </span>
-            <span className="font-sans text-[13px] text-white/60 group-hover:text-white transition-colors">
-              {m.label}
-            </span>
-            <ChevronRight
-              size={14}
-              className="ml-auto text-white/0 group-hover:text-white/40 transition-all -translate-x-2 group-hover:translate-x-0"
-            />
-          </motion.button>
-        ))}
-      </div>
-    </div>
+    {!isStreaming && data && (
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-12 pt-8 border-t border-white/5"
+      >
+        <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
+          End of Transmission // Semantic Buffer Flushed
+        </span>
+      </motion.div>
+    )}
   </div>
 );
 
@@ -202,7 +145,8 @@ const Watch = () => {
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [scanning, setScanning] = useState(false);
-  const [signal, setSignal] = useState<ReturnType<typeof generateSignal> | null>(null);
+  
+  const { data, isStreaming, startSimulation, stopStream } = useStreaming();
 
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -263,17 +207,29 @@ const Watch = () => {
   };
 
   const handleSignalOpen = () => {
-    if (panel === "signal") { setPanel(null); return; }
+    if (panel === "signal") { 
+      setPanel(null); 
+      stopStream();
+      return; 
+    }
     setPanel("signal");
-    if (!signal) {
+    if (!data) {
       setScanning(true);
     }
   };
 
   const handleScanDone = useCallback(() => {
     setScanning(false);
-    setSignal(generateSignal());
-  }, []);
+    const mockInsight = `Analysis of input audio signal indicates a heavy emphasis on first principles thinking within the capital stack. 
+
+The speaker points out that most cognitive limitations are not biological, but rather systematic assumptions that have been left unchecked over decades of convention. 
+
+To break this loop, one must apply rapid unlearning—discarding the noise of tradition to find the high-leverage signal that compounding returns actually require. 
+
+Conclusion: Human performance is optimized through the constraint of external systems, not the removal of them.`;
+    
+    startSimulation(mockInsight);
+  }, [startSimulation]);
 
   const showPanel = panel !== null;
   const modeLabel = panel === "signal" ? "Signal Mode" : panel === "notes" ? "Study Mode" : "Cinema Mode";
@@ -407,7 +363,7 @@ const Watch = () => {
               {panel === "signal" && (
                 <>
                   {scanning && <ScanAnimation onDone={handleScanDone} />}
-                  {!scanning && signal && <SignalResults signal={signal} />}
+                  {!scanning && <NeuralSynthesis data={data} isStreaming={isStreaming} />}
                 </>
               )}
             </motion.div>
