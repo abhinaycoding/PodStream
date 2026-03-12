@@ -8,10 +8,10 @@ import { db } from "@/lib/firebase";
 import FluidGlass from "@/components/ui/FluidGlass";
 
 const FEATURES = [
-  { icon: Brain, title: "AI Curation", body: "Learns exactly what you love. Gets smarter every session." },
-  { icon: Globe, title: "180+ Countries", body: "Global creators. Local taste." },
-  { icon: Zap, title: "Instant Discovery", body: "Zero lag. Infinite rabbit holes." },
-  { icon: Headphones, title: "Cinematic Audio", body: "Studio-quality streaming on any device." },
+  { icon: Brain, title: "Neural Synthesis", body: "AI-driven takeaways that distill 3-hour marathons into 3-minute insights." },
+  { icon: Zap, title: "Semantic Search", body: "Find every mention of a topic across the entire library instantly." },
+  { icon: Globe, title: "Global Intel", body: "Break language barriers with real-time translation and transcription." },
+  { icon: Headphones, title: "Studio Fidelity", body: "Lossless audio streaming engineered for the most discerning ears." },
 ];
 
 const PODCASTERS = [
@@ -121,10 +121,10 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-16 mb-24 border-b border-white/20 pb-12">
             <h2 className="font-sans font-medium text-[clamp(2.5rem,5vw,4.5rem)] text-white tracking-tight leading-[1]">
               Engineered for the<br />
-              <span className="italic font-normal text-white/70">auditory obsessive.</span>
+              <span className="italic font-normal text-white/70">knowledge-obsessed.</span>
             </h2>
             <p className="max-w-[400px] text-white/60 text-[18px] leading-relaxed font-sans pb-2">
-              Our platform defies traditional podcast consumption, leveraging advanced algorithms to deliver pure signal, zero noise.
+              PoDstream redefines the auditory landscape, transforming passive listening into active intelligence.
             </p>
           </div>
           
@@ -170,15 +170,14 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ══ BRUTALIST CTA ══ */}
       <section className="relative z-10 w-full bg-[#0015b3]/80 backdrop-blur-sm py-40 flex items-center justify-center text-center">
         <div className="max-w-4xl mx-auto px-8 flex flex-col items-center">
           <h2 className="font-sans font-medium text-[clamp(4rem,8vw,7rem)] text-white tracking-tight leading-[0.9] mb-12">
-            Change your<br />
-            <span className="italic font-normal">perspective</span>
+            Reclaim your<br />
+            <span className="italic font-normal">bandwidth</span>
           </h2>
-          <button onClick={handleLogin} className="flex items-center gap-3 px-10 py-5 bg-white text-black font-medium text-[16px] tracking-tight hover:bg-white/90 transition-colors rounded-full">
-            Join the Club <ArrowUpRight size={20} />
+          <button onClick={handleLogin} className="flex items-center gap-3 px-10 py-5 bg-white text-black font-semibold text-[16px] tracking-tight hover:bg-neutral-200 transition-colors rounded-full shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+            Get Started Now <ArrowUpRight size={20} />
           </button>
         </div>
       </section>
@@ -187,10 +186,16 @@ const Landing = () => {
       <footer className="relative z-10 w-full bg-black/80 py-16 px-8 md:px-12 border-t border-white/20">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
           <div className="flex items-center gap-3">
-             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white">
-              <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            <span className="font-sans font-medium text-[20px] tracking-tight text-white">PodStream</span>
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+              className="relative flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white">
+                 <path d="M12 2L12 22M2 12L22 12M5 5L19 19M19 5L5 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </motion.div>
+            <span className="font-sans font-medium text-[20px] tracking-tight text-white uppercase letter-spacing-widest">PoDstream</span>
           </div>
           
           <div className="flex items-center gap-12">

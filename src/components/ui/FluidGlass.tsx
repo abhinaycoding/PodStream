@@ -25,25 +25,34 @@ export default function FluidGlass({ children }: FluidGlassProps) {
       onMouseMove={handleMouseMove}
     >
       {/* --- RIBBED BACKGROUND --- */}
-      <div className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none">
+      <div 
+        className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none px-[2px]"
+        style={{ perspective: '1200px' }}
+      >
         {bars.map((_, i) => {
-          // Subtle movement for each bar
+          // Creating a slight arc with rotation
+          const rotationY = (i - bars.length / 2) * 2;
           return (
             <motion.div
               key={i}
-              className="h-full flex-1 relative border-r border-white/5"
+              className="h-full flex-1 relative origin-center"
               style={{
-                // Creating the cylindrical "ribbed" effect with multiple color stops
+                rotateY: `${rotationY}deg`,
+                // Enhanced "Ribbed" effect: sharper shadows and centered glow
                 background: `linear-gradient(90deg, 
                   rgba(0,0,0,1) 0%, 
-                  rgba(0,10,80,1) 5%, 
-                  rgba(0,30,200,1) 50%, 
-                  rgba(0,10,80,1) 95%, 
+                  rgba(0,5,60,1) 15%, 
+                  rgba(0,30,225,1) 50%, 
+                  rgba(0,5,60,1) 85%, 
                   rgba(0,0,0,1) 100%
                 )`,
+                boxShadow: 'inset 0 0 40px rgba(0,0,0,0.9)',
               }}
             >
-              {/* Highlight overlay that follows mouse with a delay per bar */}
+              {/* Vertical highlight stripe for the 'rounded' tube look */}
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px] bg-blue-300/20 blur-[3px]" />
+              
+              {/* Interactive Highlight */}
               <BarHighlight index={i} mouseX={mouseX} />
             </motion.div>
           );
