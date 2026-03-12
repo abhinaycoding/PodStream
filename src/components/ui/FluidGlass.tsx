@@ -13,7 +13,7 @@ interface FluidGlassProps {
 export default function FluidGlass({ children }: FluidGlassProps) {
   const [barCount, setBarCount] = React.useState(18);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const updateCount = () => {
       setBarCount(window.innerWidth < 768 ? 8 : 18);
     };
