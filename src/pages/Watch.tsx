@@ -100,7 +100,7 @@ const ScanAnimation = ({ onDone }: { onDone: () => void }) => {
 
 // ══ NEURAL SYNTHESIS STREAMING ══
 const NeuralSynthesis = ({ data, isStreaming }: { data: string, isStreaming: boolean }) => (
-  <div className="flex-1 overflow-y-auto p-8 font-sans selection:bg-blue-500/30">
+  <div className="p-8 font-sans selection:bg-blue-500/30">
     <div className="flex items-center gap-3 mb-10">
       <div className={`w-2 h-2 rounded-full ${isStreaming ? 'bg-blue-500 animate-pulse' : 'bg-green-500'}`} />
       <span className="text-[10px] font-mono tracking-[0.4em] text-white/40 uppercase">
@@ -133,6 +133,70 @@ const NeuralSynthesis = ({ data, isStreaming }: { data: string, isStreaming: boo
   </div>
 );
 
+// ══ AI SIGNAL RESULTS ══
+const SignalResults = ({
+  signal,
+}: {
+  signal: any;
+}) => (
+  <div className="px-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    {/* Topic Tag */}
+    <div className="py-5 border-b border-white/10">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-1">
+        Dominant Signal
+      </span>
+      <span className="text-[13px] font-mono font-medium text-white tracking-widest uppercase">
+        {signal.topic.label}
+      </span>
+    </div>
+
+    {/* Key Takeaways */}
+    <div className="py-6 border-b border-white/10">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-6">
+        Structured Insights
+      </span>
+      <ol className="flex flex-col gap-6">
+        {signal.takeaways.map((t: string, i: number) => (
+          <motion.li
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.15 }}
+            className="flex gap-4 items-start group"
+          >
+            <span className="font-mono text-[11px] text-white/20 mt-0.5 shrink-0">
+              0{i + 1}
+            </span>
+            <p className="text-[13px] text-white/70 leading-relaxed font-sans group-hover:text-white transition-colors">
+              {t}
+            </p>
+          </motion.li>
+        ))}
+      </ol>
+    </div>
+
+    {/* Core Concepts */}
+    <div className="py-6">
+      <span className="text-[10px] font-mono tracking-widest text-white/30 uppercase block mb-4">
+        Semantic Clusters
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {signal.concepts.map((c: string, i: number) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 + i * 0.08 }}
+            className="px-3 py-1.5 border border-white/10 text-[10px] font-mono tracking-widest text-white/50 hover:border-white hover:border-blue-500/40 transition-all cursor-default"
+          >
+            {c}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 // ══ MAIN WATCH COMPONENT ══
 const Watch = () => {
   const { id } = useParams();
@@ -145,6 +209,7 @@ const Watch = () => {
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [scanning, setScanning] = useState(false);
+  const [signal, setSignal] = useState<any | null>(null);
   
   const { data, isStreaming, startSimulation, stopStream } = useStreaming();
 
@@ -361,10 +426,15 @@ Conclusion: Human performance is optimized through the constraint of external sy
 
               {/* SIGNAL CONTENT */}
               {panel === "signal" && (
-                <>
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                   {scanning && <ScanAnimation onDone={handleScanDone} />}
-                  {!scanning && <NeuralSynthesis data={data} isStreaming={isStreaming} />}
-                </>
+                  {!scanning && (
+                    <>
+                      <NeuralSynthesis data={data} isStreaming={isStreaming} />
+                      {!isStreaming && signal && <SignalResults signal={signal} />}
+                    </>
+                  )}
+                </div>
               )}
             </motion.div>
           )}

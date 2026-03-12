@@ -47,5 +47,5 @@ export function useStreaming() {
     setIsStreaming(false);
   }, []);
 
-  return { data, isStreaming, error, startStream, stopStream };
+  return { data, isStreaming, error, startStream, startSimulation, stopStream };
 }
