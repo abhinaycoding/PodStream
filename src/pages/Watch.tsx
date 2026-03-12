@@ -213,6 +213,13 @@ const Watch = () => {
   
   const { data, isStreaming, startSimulation, stopStream } = useStreaming();
 
+  // Auto-generate structured signal data once streaming finishes
+  useEffect(() => {
+    if (data && !isStreaming && !signal) {
+      setSignal(generateSignal());
+    }
+  }, [data, isStreaming, signal]);
+
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
