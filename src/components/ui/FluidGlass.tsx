@@ -75,7 +75,7 @@ export default function FluidGlass({ children }: FluidGlassProps) {
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Vignette / Depth */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
