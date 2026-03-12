@@ -86,7 +86,8 @@ const Landing = () => {
           
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-[1300px]"
           >
@@ -103,7 +104,12 @@ const Landing = () => {
       </section>
 
       {/* ══ BRUTALIST MARQUEE ══ */}
-      <div className="relative z-10 w-full border-t border-b border-white/10 bg-black/40 backdrop-blur-xl py-8 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="relative z-10 w-full border-t border-b border-white/10 bg-black/40 backdrop-blur-xl py-8 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+      >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-blue-500/5 pointer-events-none" />
         <style>{`
           @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -116,13 +122,18 @@ const Landing = () => {
             </span>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ══ MINIMALIST FEATURES GRID ══ */}
       <section className="relative z-10 w-full bg-black/40 py-40">
         <div className="max-w-[1600px] mx-auto px-8 md:px-12">
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-16 mb-24 border-b border-white/20 pb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-16 mb-24 border-b border-white/20 pb-12"
+          >
             <h2 className="font-sans font-medium text-[clamp(2.5rem,5vw,4.5rem)] text-white tracking-tight leading-[1]">
               Engineered for the<br />
               <span className="italic font-normal text-white/70">knowledge-obsessed.</span>
@@ -130,27 +141,51 @@ const Landing = () => {
             <p className="max-w-[400px] text-white/60 text-[18px] leading-relaxed font-sans pb-2">
               PoDstream redefines the auditory landscape, transforming passive listening into active intelligence.
             </p>
-          </div>
+          </motion.div>
           
           <div className="bento-container">
             {/* Featured Card */}
-            <div className="col-span-1 md:col-span-2 row-span-2 glass-panel glass-border p-10 flex flex-col justify-between group overflow-hidden">
-               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="col-span-1 md:col-span-2 row-span-2 glass-panel glass-border p-10 flex flex-col justify-between group overflow-hidden"
+            >
+               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                <div className="relative z-10">
                  <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
                    <Brain size={28} className="text-white" />
                  </div>
                  <h4 className="font-sans font-medium text-white text-[32px] mb-4 tracking-tight leading-none">{FEATURES[0].title}</h4>
                  <p className="text-white/60 text-[18px] leading-relaxed font-sans max-w-sm">{FEATURES[0].body}</p>
+                 
+                 {/* Animated Waveform Wrapper */}
+                 <div className="mt-12 h-16 w-full flex items-end gap-1 overflow-hidden opacity-40">
+                   {[...Array(24)].map((_, i) => (
+                     <motion.div
+                       key={i}
+                       animate={{ height: [10, 40, 15, 35, 12] }}
+                       transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05, ease: "easeInOut" }}
+                       className="w-full bg-blue-400/50 rounded-full"
+                     />
+                   ))}
+                 </div>
                </div>
-               <div className="relative z-10 flex items-center gap-2 text-white/40 font-mono text-sm uppercase tracking-widest group-hover:text-white transition-colors">
+               <div className="relative z-10 flex items-center gap-2 text-white/40 font-mono text-sm uppercase tracking-widest group-hover:text-white transition-colors mt-8">
                  Explore Engine <ArrowUpRight size={14} />
                </div>
-            </div>
+            </motion.div>
 
             {/* Other Cards */}
             {FEATURES.slice(1).map((f, i) => (
-              <div key={f.title} className="col-span-1 glass-panel glass-border p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-transform duration-300">
+              <motion.div 
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="col-span-1 glass-panel glass-border p-8 flex flex-col gap-6 group hover:translate-y-[-4px] transition-transform duration-300"
+              >
                 <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center transition-colors group-hover:bg-white/20">
                   <f.icon size={20} className="text-white/70 group-hover:text-white" />
                 </div>
@@ -158,10 +193,15 @@ const Landing = () => {
                   <h4 className="font-sans font-medium text-white text-[20px] mb-2 tracking-tight">{f.title}</h4>
                   <p className="text-white/50 text-[15px] leading-relaxed font-sans">{f.body}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
 
-            <div className="col-span-1 md:col-span-2 glass-panel glass-border p-8 flex items-center justify-between group cursor-pointer bg-white/5 hover:bg-white/10 transition-colors">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="col-span-1 md:col-span-2 glass-panel glass-border p-8 flex items-center justify-between group cursor-pointer bg-white/5 hover:bg-white/10 transition-colors"
+            >
               <div>
                 <h4 className="font-sans font-medium text-white text-[22px] tracking-tight">Ready to dive in?</h4>
                 <p className="text-white/40 text-[14px] font-mono uppercase tracking-widest mt-1">Join 50k+ listeners</p>
@@ -169,12 +209,18 @@ const Landing = () => {
               <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
                 <ArrowUpRight size={20} />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <section className="relative z-10 w-full bg-[#0015b3]/80 backdrop-blur-sm py-40 flex items-center justify-center text-center">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="relative z-10 w-full bg-[#0015b3]/80 backdrop-blur-sm py-40 flex items-center justify-center text-center"
+      >
         <div className="max-w-4xl mx-auto px-8 flex flex-col items-center">
           <h2 className="font-sans font-medium text-[clamp(4rem,8vw,7rem)] text-white tracking-tight leading-[0.9] mb-12">
             Reclaim your<br />
@@ -184,7 +230,7 @@ const Landing = () => {
             Get Started Now <ArrowUpRight size={20} />
           </button>
         </div>
-      </section>
+      </motion.section>
 
       {/* ══ MINIMAL FOOTER ══ */}
       <footer className="relative z-10 w-full bg-black/80 py-16 px-8 md:px-12 border-t border-white/20">

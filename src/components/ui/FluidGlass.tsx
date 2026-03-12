@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 
 interface FluidGlassProps {
   children?: React.ReactNode;
@@ -12,6 +12,10 @@ interface FluidGlassProps {
  */
 export default function FluidGlass({ children }: FluidGlassProps) {
   const [barCount, setBarCount] = React.useState(18);
+  const { scrollY } = useScroll();
+  
+  // Parallax effect: background moves at 20% speed
+  const backgroundY = useTransform(scrollY, [0, 2000], [0, -400]);
 
   React.useEffect(() => {
     const updateCount = () => {
@@ -32,13 +36,16 @@ export default function FluidGlass({ children }: FluidGlassProps) {
 
   return (
     <div 
-      className="relative isolate min-h-screen bg-[#020205] overflow-x-hidden"
+      className="relative isolate min-h-screen bg-[#020205]"
       onMouseMove={handleMouseMove}
     >
       {/* --- RIBBED BACKGROUND --- */}
-      <div 
+      <motion.div 
         className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none px-[2px]"
-        style={{ perspective: '1200px' }}
+        style={{ 
+          perspective: '1200px',
+          y: backgroundY // Vertical Parallax
+        }}
       >
         {bars.map((_, i) => {
           // Creating a slight arc with rotation
