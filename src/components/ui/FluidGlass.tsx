@@ -48,11 +48,10 @@ export default function FluidGlass({
       >
         <Canvas
           camera={{ position: [0, 0, 20], fov: 15 }}
-          dpr={[1, 2]}
           gl={{ antialias: true, alpha: true }}
         >
           <ambientLight intensity={0.5} />
-          <Environment preset="city" />
+          <pointLight position={[10, 10, 10]} />
           
           <BackgroundObjects />
           <GlassLens mode={mode} />
@@ -116,16 +115,12 @@ function GlassLens({ mode }: { mode: string }) {
       rotation-x={Math.PI / 2}
       scale={0.13}
     >
-      <meshPhysicalMaterial
-        transmission={1}
-        thickness={1}
-        roughness={0.05}
-        ior={1.2}
-        clearcoat={1}
-        clearcoatRoughness={0}
-        metalness={0}
-        transparent={true}
+      <meshStandardMaterial
+        roughness={0.1}
+        metalness={0.5}
         color="#ffffff"
+        transparent={true}
+        opacity={0.8}
       />
     </mesh>
   );
@@ -135,11 +130,9 @@ function GlassLens({ mode }: { mode: string }) {
 
 function BackgroundObjects() {
   const group = useRef<THREE.Group>(null!);
-  const data = useScroll();
 
   useFrame((state, delta) => {
-    if (!group.current || !data) return;
-    const t = data.offset || 0;
+    if (!group.current) return;
     
     if (group.current.children) {
       group.current.children.forEach((child, i) => {
@@ -149,38 +142,29 @@ function BackgroundObjects() {
         }
       });
     }
-    group.current.position.y = t * 10;
   });
 
   return (
     <group ref={group}>
-      <Float speed={2}>
-        <mesh position={[-5, 2, -5]}>
-          <sphereGeometry args={[2.5, 48, 48]} />
-          <meshStandardMaterial color="#0026ff" roughness={0.2} metalness={0.8} />
-        </mesh>
-      </Float>
+      <mesh position={[-5, 2, -5]}>
+        <sphereGeometry args={[2.5, 32, 32]} />
+        <meshStandardMaterial color="#0026ff" roughness={0.2} metalness={0.8} />
+      </mesh>
 
-      <Float speed={1.5}>
-        <mesh position={[5, 4, -8]}>
-          <sphereGeometry args={[3, 48, 48]} />
-          <meshStandardMaterial color="#7A69F9" roughness={0.3} metalness={0.6} />
-        </mesh>
-      </Float>
+      <mesh position={[5, 4, -8]}>
+        <sphereGeometry args={[3, 32, 32]} />
+        <meshStandardMaterial color="#7A69F9" roughness={0.3} metalness={0.6} />
+      </mesh>
 
-      <Float speed={2.5}>
-        <mesh position={[-3, -4, -4]} rotation={[0.5, 0.2, 0]}>
-          <torusGeometry args={[2, 0.6, 32, 64]} />
-          <meshStandardMaterial color="#F5833F" roughness={0.1} metalness={0.9} />
-        </mesh>
-      </Float>
+      <mesh position={[-3, -4, -4]} rotation={[0.5, 0.2, 0]}>
+        <torusGeometry args={[2, 0.6, 16, 32]} />
+        <meshStandardMaterial color="#F5833F" roughness={0.1} metalness={0.9} />
+      </mesh>
 
-      <Float speed={2}>
-        <mesh position={[4, -10, -6]}>
-          <sphereGeometry args={[2.5, 48, 48]} />
-          <meshStandardMaterial color="#F26378" roughness={0.2} metalness={0.7} />
-        </mesh>
-      </Float>
+      <mesh position={[4, -10, -6]}>
+        <sphereGeometry args={[2.5, 32, 32]} />
+        <meshStandardMaterial color="#F26378" roughness={0.2} metalness={0.7} />
+      </mesh>
 
       <mesh position={[0, -18, -10]} rotation={[0.3, 0.5, 0]}>
         <octahedronGeometry args={[4]} />
