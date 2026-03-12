@@ -32,31 +32,44 @@ export default function FluidGlass({
           radial-gradient(circle at 20% 40%, rgba(122, 105, 249, 0.4) 0%, transparent 60%),
           radial-gradient(circle at 80% 60%, rgba(242, 99, 120, 0.4) 0%, transparent 60%),
           radial-gradient(circle at 50% 50%, rgba(245, 131, 63, 0.2) 0%, transparent 80%)
-        `
+        `,
+        overflowX: 'hidden',
+        overflowY: 'auto'
       }}
     >
-      <Canvas
-        camera={{ position: [0, 0, 20], fov: 15 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+      {/* ─── 3D Background Layer ─── */}
+      <div 
+        style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: -1, 
+          pointerEvents: 'none' 
+        }}
       >
-        <ambientLight intensity={0.5} />
-        <Environment preset="city" />
-
-        <ScrollControls damping={0.2} pages={4} distance={0.5}>
-          <Scroll>
-            <BackgroundObjects />
-          </Scroll>
-
+        <Canvas
+          camera={{ position: [0, 0, 20], fov: 15 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true }}
+        >
+          <ambientLight intensity={0.5} />
+          <Environment preset="city" />
+          
+          <BackgroundObjects />
           <GlassLens mode={mode} />
+        </Canvas>
+      </div>
 
-          <Scroll html style={{ width: '100%' }}>
-            <div style={{ pointerEvents: 'auto' }}>
-              {children}
-            </div>
-          </Scroll>
-        </ScrollControls>
-      </Canvas>
+      {/* ─── DOM Content Layer ─── */}
+      <div 
+        style={{ 
+          position: 'relative', 
+          zIndex: 1, 
+          width: '100%',
+          minHeight: '100%'
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
