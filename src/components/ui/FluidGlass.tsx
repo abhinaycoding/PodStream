@@ -11,7 +11,18 @@ interface FluidGlassProps {
  * Replicates the complex cylindrical depth from the reference without Three.js.
  */
 export default function FluidGlass({ children }: FluidGlassProps) {
-  const bars = useMemo(() => Array.from({ length: 18 }), []);
+  const [barCount, setBarCount] = React.useState(18);
+
+  useEffect(() => {
+    const updateCount = () => {
+      setBarCount(window.innerWidth < 768 ? 8 : 18);
+    };
+    updateCount();
+    window.addEventListener('resize', updateCount);
+    return () => window.removeEventListener('resize', updateCount);
+  }, []);
+
+  const bars = useMemo(() => Array.from({ length: barCount }), [barCount]);
   
   const mouseX = useMotionValue(0);
   const handleMouseMove = (e: React.MouseEvent) => {

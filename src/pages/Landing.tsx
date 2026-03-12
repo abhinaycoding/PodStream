@@ -81,8 +81,8 @@ const Landing = () => {
       </header>
 
       {/* ══ HERO LAYOUT ══ */}
-      <section className="relative w-full h-screen flex items-center z-10">
-        <div className="max-w-[1600px] mx-auto w-full px-8 md:px-12">
+      <section className="relative w-full h-[90svh] flex items-center z-10 pt-20">
+        <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12">
           
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -90,9 +90,12 @@ const Landing = () => {
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-[1300px]"
           >
-            <h1 className="font-sans text-white tracking-tighter leading-[0.85] text-[clamp(4.5rem,11vw,11rem)]">
-              <span className="font-bold block">We defy the disciplines</span>
-              <span className="font-medium italic block opacity-95 mt-4">to mobilize your data</span>
+            <h1 className="font-sans text-white tracking-tighter leading-[0.9] text-[clamp(2.75rem,8vw,10.5rem)]">
+              <span className="font-bold block">Stop scrolling.</span>
+              <span className="font-bold block text-blue-400">Start absorbing.</span>
+              <span className="font-medium italic block opacity-95 mt-4 text-[clamp(1.5rem,4vw,5rem)]">
+                The world's most intelligent podcast engine.
+              </span>
             </h1>
           </motion.div>
 
