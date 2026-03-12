@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 interface FluidGlassProps {
   children?: React.ReactNode;
@@ -7,56 +7,81 @@ interface FluidGlassProps {
 }
 
 /**
- * FluidGlass (Stable CSS Version)
- * Replaces the unstable R3F/Drei implementation with high-performance CSS/Framer Motion.
- * This ensures the 'reading S' error never returns.
+ * FluidGlass (High-Fidelity "Ribbed" CSS Version)
+ * Replicates the complex cylindrical depth from the reference without Three.js.
  */
 export default function FluidGlass({ children }: FluidGlassProps) {
-  // Generate 16 vertical bars for the background effect
-  const bars = useMemo(() => Array.from({ length: 16 }), []);
+  const bars = useMemo(() => Array.from({ length: 18 }), []);
+  
+  const mouseX = useMotionValue(0);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX } = e;
+    mouseX.set(clientX);
+  };
 
   return (
-    <div className="relative isolate min-h-screen bg-black overflow-x-hidden">
-      {/* --- STABLE CSS BACKGROUND --- */}
+    <div 
+      className="relative isolate min-h-screen bg-[#020205] overflow-x-hidden"
+      onMouseMove={handleMouseMove}
+    >
+      {/* --- RIBBED BACKGROUND --- */}
       <div className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none">
-        {bars.map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: [0.3, 0.6, 0.3],
-              backgroundPosition: ['0% 0%', '0% 100%', '0% 0%']
-            }}
-            transition={{
-              duration: 5 + Math.random() * 5,
-              repeat: Infinity,
-              ease: "linear",
-              delay: i * 0.1
-            }}
-            className="h-full flex-1 border-r border-white/5 relative"
-            style={{
-              background: `linear-gradient(to bottom, 
-                ${i % 2 === 0 ? 'rgba(0, 21, 179, 0.8)' : 'rgba(0, 15, 120, 0.9)'} 0%, 
-                rgba(0, 0, 0, 1) 100%
-              )`,
-              backgroundSize: '100% 200%',
-              // Simulating the depth found in the screenshot
-              boxShadow: i % 2 === 0 ? 'inset -1px 0 10px rgba(0,0,0,0.5)' : 'none'
-            }}
-          >
-            {/* Subtle glow stripe */}
-            <div className="absolute inset-y-0 left-0 w-[1px] bg-blue-400/20 blur-[1px]" />
-          </motion.div>
-        ))}
-        
-        {/* Overall grain/noise overlay for depth */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        {bars.map((_, i) => {
+          // Subtle movement for each bar
+          return (
+            <motion.div
+              key={i}
+              className="h-full flex-1 relative border-r border-white/5"
+              style={{
+                // Creating the cylindrical "ribbed" effect with multiple color stops
+                background: `linear-gradient(90deg, 
+                  rgba(0,0,0,1) 0%, 
+                  rgba(0,10,80,1) 5%, 
+                  rgba(0,30,200,1) 50%, 
+                  rgba(0,10,80,1) 95%, 
+                  rgba(0,0,0,1) 100%
+                )`,
+              }}
+            >
+              {/* Highlight overlay that follows mouse with a delay per bar */}
+              <BarHighlight index={i} mouseX={mouseX} />
+            </motion.div>
+          );
+        })}
       </div>
+
+      {/* Vignette / Depth */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+      
+      {/* Subtle Scanlines or Noise */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
       {/* --- CONTENT LAYER --- */}
       <div className="relative z-10 w-full h-full">
         {children}
       </div>
     </div>
+  );
+}
+
+function BarHighlight({ index, mouseX }: { index: number, mouseX: any }) {
+  const springConfig = { damping: 20, stiffness: 100 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  
+  // Each bar's range
+  const barWidth = typeof window !== 'undefined' ? window.innerWidth / 18 : 100;
+  const barCenter = (index + 0.5) * barWidth;
+  
+  const opacity = useTransform(smoothMouseX, (latest) => {
+    const dist = Math.abs(latest - barCenter);
+    const range = 300; // Glow range
+    return Math.max(0, 1 - dist / range) * 0.4;
+  });
+
+  return (
+    <motion.div 
+      className="absolute inset-0 z-0 bg-blue-400/20 blur-xl"
+      style={{ opacity }}
+    />
   );
 }

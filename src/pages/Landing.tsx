@@ -53,19 +53,26 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 pt-12 pb-4">
         <div className="max-w-[1600px] mx-auto px-8 md:px-12 flex items-center justify-between">
           
-          {/* Logo */}
+          {/* Logo Section */}
           <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="relative">
-               <span className="text-white text-2xl font-light">*</span>
-            </div>
-            <span className="font-sans font-medium text-xl tracking-tight text-white">
-              Standard Data
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+              className="relative flex items-center justify-center"
+            >
+              {/* Star-like logo from reference */}
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                 <path d="M12 2L12 22M2 12L22 12M5 5L19 19M19 5L5 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </motion.div>
+            <span className="font-sans font-medium text-xl tracking-tight text-white uppercase letter-spacing-widest">
+              PoDstream
             </span>
           </div>
 
           {/* Right Layout (CTA Only) */}
           <div className="flex items-center gap-6">
-            <button onClick={handleLogin} className="flex items-center gap-2 text-[15px] font-medium tracking-tight text-white/90 hover:text-white transition-colors group px-6 py-2 rounded-full border border-white/10 hover:border-white/30 backdrop-blur-sm">
+            <button onClick={handleLogin} className="flex items-center gap-2 text-[15px] font-medium tracking-tight text-white hover:bg-white hover:text-black transition-all duration-500 group px-6 py-2.5 rounded-full border border-white/20 backdrop-blur-md">
               Start Free 
               <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
@@ -73,19 +80,19 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* ══ NEW HERO LAYOUT ══ */}
+      {/* ══ HERO LAYOUT ══ */}
       <section className="relative w-full h-screen flex items-center z-10">
         <div className="max-w-[1600px] mx-auto w-full px-8 md:px-12">
           
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-[1300px]"
           >
-            <h1 className="font-sans text-white tracking-tight leading-[1.0] text-[clamp(4.5rem,10vw,10rem)]">
-              <span className="font-medium block">We defy the disciplines</span>
-              <span className="font-medium italic block opacity-90">to mobilize your data</span>
+            <h1 className="font-sans text-white tracking-tighter leading-[0.85] text-[clamp(4.5rem,11vw,11rem)]">
+              <span className="font-bold block">We defy the disciplines</span>
+              <span className="font-medium italic block opacity-95 mt-4">to mobilize your data</span>
             </h1>
           </motion.div>
 
