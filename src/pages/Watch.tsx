@@ -271,11 +271,19 @@ const Watch = () => {
   const openFullscreen = () => {
     const iframe = document.getElementById("yt-player") as HTMLIFrameElement | null;
     if (!iframe) return;
-    const req =
-      iframe.requestFullscreen ||
-      (iframe as any).webkitRequestFullscreen ||
-      (iframe as any).mozRequestFullScreen;
-    if (req) req.call(iframe);
+    try {
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if ((iframe as any).webkitRequestFullscreen) {
+        (iframe as any).webkitRequestFullscreen();
+      } else if ((iframe as any).mozRequestFullScreen) {
+        (iframe as any).mozRequestFullScreen();
+      } else if ((iframe as any).msRequestFullscreen) {
+        (iframe as any).msRequestFullscreen();
+      }
+    } catch (e) {
+      console.error("Fullscreen failed:", e);
+    }
   };
 
   const handleSignalOpen = () => {
@@ -343,13 +351,15 @@ Conclusion: Human performance is optimized through the constraint of external sy
         </div>
       </div>
 
-      {/* SPLIT SCREEN CONTAINER */}
-      <div className="flex-1 flex min-h-0 w-full relative">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 w-full relative">
         {/* VIDEO (Left/Full) */}
         <motion.div
-          animate={{ width: showPanel ? "65%" : "100%" }}
+          animate={{ 
+            width: showPanel ? (window.innerWidth < 768 ? "100%" : "65%") : "100%",
+            opacity: (showPanel && window.innerWidth < 768) ? 0.3 : 1
+          }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="h-full flex flex-col items-center justify-center px-6 md:px-12 py-6 shrink-0"
+          className="h-full flex flex-col items-center justify-center px-4 md:px-12 py-6 shrink-0 z-0"
         >
           <motion.div
             animate={{ maxWidth: showPanel ? "100%" : "75rem" }}
@@ -369,7 +379,6 @@ Conclusion: Human performance is optimized through the constraint of external sy
                 src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&fs=1`}
                 className="absolute inset-0 w-full h-full"
                 allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                allowFullScreen
                 title="PodStream Video Player"
               />
             </div>
@@ -380,12 +389,11 @@ Conclusion: Human performance is optimized through the constraint of external sy
         <AnimatePresence>
           {showPanel && (
             <motion.div
-              initial={{ width: "0%", opacity: 0, x: 50 }}
-              animate={{ width: "35%", opacity: 1, x: 0 }}
-              exit={{ width: "0%", opacity: 0, x: 50 }}
-              transition={{ type: "spring", damping: 25, stiffness: 180 }}
-              className="h-full border-l border-white/10 bg-[#050505] flex flex-col shrink-0 overflow-hidden"
-              style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 250 }}
+              className="absolute right-0 top-0 bottom-0 w-full md:w-[35%] border-l border-white/10 bg-black/95 md:bg-[#050505] backdrop-blur-xl md:backdrop-blur-none flex flex-col z-50 overflow-hidden"
             >
               {/* Panel Tab Bar */}
               <div className="flex border-b border-white/10 shrink-0 select-none">
@@ -449,35 +457,35 @@ Conclusion: Human performance is optimized through the constraint of external sy
       </div>
 
       {/* BOTTOM BAR */}
-      <div className="w-full px-8 py-4 flex items-center justify-between border-t border-white/10 shrink-0 select-none">
-        <span className="text-[11px] font-mono text-white/20 uppercase tracking-widest hidden md:block">
+      <div className="w-full px-4 md:px-8 py-4 flex items-center justify-between border-t border-white/10 shrink-0 select-none bg-black/50 backdrop-blur-md">
+        <span className="text-[10px] md:text-[11px] font-mono text-white/20 uppercase tracking-widest hidden sm:block">
           Press <span className="text-white/40">ESC</span> to exit ·{" "}
           <span className="text-white/40">FS</span> for fullscreen
         </span>
 
-        <div className="flex items-center gap-3 ml-auto md:ml-0">
+        <div className="flex items-center gap-2 md:gap-3 ml-auto md:ml-0 w-full md:w-auto justify-end">
           {/* Notes Button */}
           <button
             onClick={() => setPanel(panel === "notes" ? null : "notes")}
-            className={`flex items-center gap-2.5 px-5 py-2.5 border transition-all text-[11px] font-mono uppercase tracking-widest
+            className={`flex-1 md:flex-none flex items-center justify-center gap-2.5 px-4 md:px-5 py-3 md:py-2.5 border transition-all text-[10px] md:text-[11px] font-mono uppercase tracking-widest
               ${panel === "notes"
                 ? "bg-white text-black border-white"
                 : "bg-transparent text-white border-white/20 hover:border-white hover:bg-white/5"}`}
           >
             <PenLine size={13} />
-            Notes
+            <span className="hidden xs:inline">Notes</span>
           </button>
 
           {/* AI Signal Button */}
           <button
             onClick={handleSignalOpen}
-            className={`flex items-center gap-2.5 px-5 py-2.5 border transition-all text-[11px] font-mono uppercase tracking-widest
+            className={`flex-1 md:flex-none flex items-center justify-center gap-2.5 px-4 md:px-5 py-3 md:py-2.5 border transition-all text-[10px] md:text-[11px] font-mono uppercase tracking-widest
               ${panel === "signal"
                 ? "bg-white text-black border-white"
                 : "bg-transparent text-white border-white/20 hover:border-white hover:bg-white/5"}`}
           >
             <Zap size={13} />
-            AI Signal
+            <span className="hidden xs:inline">AI Signal</span>
           </button>
         </div>
       </div>
