@@ -14,8 +14,14 @@ export default function FluidGlass({ children }: FluidGlassProps) {
   const [barCount, setBarCount] = React.useState(18);
   const { scrollY } = useScroll();
   
-  // Parallax effect: background moves at 20% speed
-  const backgroundY = useTransform(scrollY, [0, 2000], [0, -400]);
+  // Ultra-Strong Parallax effect: background moves at 50% speed
+  const backgroundY = useTransform(scrollY, [0, 1500], [0, -750]);
+  
+  // Immersive scaling: Background grows slightly as you scroll into the 'depth'
+  const backgroundScale = useTransform(scrollY, [0, 1500], [1, 1.15]);
+  
+  // Dynamic Tilt: Subtle perspective shift based on scroll
+  const backgroundRotateX = useTransform(scrollY, [0, 1500], [0, 4]);
 
   React.useEffect(() => {
     const updateCount = () => {
@@ -36,15 +42,18 @@ export default function FluidGlass({ children }: FluidGlassProps) {
 
   return (
     <div 
-      className="relative isolate min-h-screen bg-[#020205]"
+      className="relative isolate min-h-screen bg-[#020205] overflow-x-hidden"
       onMouseMove={handleMouseMove}
     >
       {/* --- RIBBED BACKGROUND --- */}
       <motion.div 
-        className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none px-[2px]"
+        className="fixed inset-0 -z-10 flex overflow-hidden pointer-events-none px-[2px] origin-top"
         style={{ 
-          perspective: '1200px',
-          y: backgroundY // Vertical Parallax
+          perspective: '2000px',
+          y: backgroundY, 
+          scale: backgroundScale,
+          rotateX: backgroundRotateX,
+          filter: 'brightness(1.2)'
         }}
       >
         {bars.map((_, i) => {
