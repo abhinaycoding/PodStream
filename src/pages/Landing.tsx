@@ -44,28 +44,85 @@ const LEGAL_CONTENT = {
 const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean, onClose: () => void, title: string, content: string }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-12 overflow-hidden">
+      {/* Dynamic Backdrop */}
       <motion.div 
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/80 backdrop-blur-2xl" 
+        className="absolute inset-0 bg-black/90 backdrop-blur-3xl" 
       />
+      
+      {/* The Signature Card */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative w-full max-w-2xl bg-neutral-900/50 glass-border rounded-[32px] p-10 overflow-hidden shadow-2xl"
+        initial={{ opacity: 0, scale: 0.95, y: 40, filter: 'blur(10px)' }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ type: "spring", damping: 25, stiffness: 300, mass: 0.5 }}
+        className="relative w-full max-w-2xl bg-[#0a0a10]/80 glass-border rounded-[40px] p-8 md:p-14 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)] border border-white/10"
       >
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-transparent" />
-        <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">{title}</h3>
-        <div className="text-white/60 leading-relaxed font-sans whitespace-pre-line space-y-4">
-          {content}
-        </div>
+        {/* Anti-Generic Textures */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
+        
+        {/* Floating Close Button (UX) */}
         <button 
           onClick={onClose}
-          className="mt-10 px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-white/90 transition-colors"
+          className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all group z-50"
         >
-          Close
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
+
+        {/* Content Reveal Flow */}
+        <div className="relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex items-center gap-3 mb-8"
+          >
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/40">Secured Transmission</span>
+          </motion.div>
+
+          <motion.h3 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tighter leading-none"
+          >
+            {title}
+          </motion.h3>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-white/70 text-lg md:text-xl leading-relaxed font-sans whitespace-pre-line space-y-6 max-h-[50vh] overflow-y-auto pr-4 custom-scrollbar"
+          >
+            {content}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12 flex items-center justify-between"
+          >
+            <button 
+              onClick={onClose}
+              className="px-10 py-4 bg-white text-black font-bold rounded-full hover:bg-blue-500 hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+            >
+              Acknowledge Protocol
+            </button>
+            <span className="font-mono text-[9px] text-white/20 uppercase tracking-widest hidden sm:block">EST. 2026 // PoDstream Arch</span>
+          </motion.div>
+        </div>
+
+        {/* Neural Scanline accent */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-blue-600/5 to-transparent pointer-events-none" />
       </motion.div>
     </div>
   );
