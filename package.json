@@ -41,9 +41,6 @@
     "vite": "^5.4.0"
   },
   "overrides": {
-    "three": "0.166.0",
-    "three-mesh-bvh": "0.8.0",
-    "react": "$react",
-    "react-dom": "$react-dom"
+    "three": "0.166.0"
   }
 }

@@ -46,62 +46,46 @@ const Landing = () => {
   };
 
   return (
-    <FluidGlass mode="lens">
+    <FluidGlass>
       <div className="w-full min-h-screen relative z-10 font-sans selection:bg-white selection:text-black">
-        {/* Transparent overlay to not block 3D visuals */}
-        <div className="absolute inset-0 bg-transparent pointer-events-none -z-10" />
-
-      {/* ══ BRUTALIST PURE-TEXT NAVBAR ══ */}
-      <header className="fixed top-0 left-0 right-0 z-50 pt-8 pb-4 mix-blend-difference">
-        <div className="max-w-[1600px] mx-auto px-8 md:px-12 flex items-start justify-between">
+      
+      {/* ══ MINIMAL NAVBAR ══ */}
+      <header className="fixed top-0 left-0 right-0 z-50 pt-12 pb-4">
+        <div className="max-w-[1600px] mx-auto px-8 md:px-12 flex items-center justify-between">
           
-          {/* Logo - Pure Text */}
+          {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer group">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white group-hover:rotate-180 transition-transform duration-700">
-              <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            <span className="font-sans font-medium text-lg tracking-tight text-white">
-              PodStream
+            <div className="relative">
+               <span className="text-white text-2xl font-light">*</span>
+            </div>
+            <span className="font-sans font-medium text-xl tracking-tight text-white">
+              Standard Data
             </span>
           </div>
 
-          {/* Center Links (Hidden on small mobile) */}
-          <nav className="hidden md:flex items-center gap-8 mt-1">
-          </nav>
-
-          {/* Right Layout (Language & CTA) */}
-          <div className="flex items-center gap-16 mt-1">
-            <div className="hidden lg:flex items-center gap-2 text-[14px] font-normal tracking-tight text-white/50">
-              <span className="text-white">En</span>
-              <span>|</span>
-              <span className="hover:text-white cursor-pointer transition-colors">Es</span>
-            </div>
-            
-            <button onClick={handleLogin} className="flex items-center gap-2 text-[14px] font-normal tracking-tight text-white hover:opacity-70 transition-opacity group">
+          {/* Right Layout (CTA Only) */}
+          <div className="flex items-center gap-6">
+            <button onClick={handleLogin} className="flex items-center gap-2 text-[15px] font-medium tracking-tight text-white/90 hover:text-white transition-colors group px-6 py-2 rounded-full border border-white/10 hover:border-white/30 backdrop-blur-sm">
               Start Free 
-              <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* ══ MASSIVE TYPOGRAPHY HERO ══ */}
-      <section className="relative w-full h-[100svh] min-h-[700px] flex items-center z-10">
+      {/* ══ NEW HERO LAYOUT ══ */}
+      <section className="relative w-full h-screen flex items-center z-10">
         <div className="max-w-[1600px] mx-auto w-full px-8 md:px-12">
           
           <motion.div 
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[1200px]"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full max-w-[1300px]"
           >
-            {/* 
-              Matching the exact layout from the user's reference:
-              "We defy the disciplines \n to mobilize your data"
-            */}
-            <h1 className="font-sans text-[#f4f4f5] tracking-tight leading-[0.9] text-[clamp(4.5rem,12vw,13rem)] premium-text-glow">
-              <span className="font-medium block">We curate the audio</span>
-              <span className="font-normal italic block pr-4 bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">to amplify your mind</span>
+            <h1 className="font-sans text-white tracking-tight leading-[1.0] text-[clamp(4.5rem,10vw,10rem)]">
+              <span className="font-medium block">We defy the disciplines</span>
+              <span className="font-medium italic block opacity-90">to mobilize your data</span>
             </h1>
           </motion.div>
 
