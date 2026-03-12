@@ -77,15 +77,6 @@ const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean, onClose: 
 
         {/* Content Reveal Flow */}
         <div className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="flex items-center gap-3 mb-8"
-          >
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/40">Secured Transmission</span>
-          </motion.div>
 
           <motion.h3 
             initial={{ opacity: 0, y: 10 }}
