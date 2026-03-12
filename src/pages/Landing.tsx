@@ -24,13 +24,58 @@ const PODCASTERS = [
 
 const MARQUEE_A = [...PODCASTERS, ...PODCASTERS];
 
-// Array defining the vertical background bands to simulate folds
-const BANDS = Array.from({ length: 16 });
+const LEGAL_CONTENT = {
+  privacy: {
+    title: "Privacy Protocol",
+    content: `PoDstream Architecture is committed to your neural privacy. 
+    1. Data Synthesis: We only process audio data required for semantic synthesis. 
+    2. Zero Retention: Your personal listening patterns are never sold or shared with external agents.
+    3. Encryption: All "Brain" takeaways are protected with studio-grade end-to-end encryption.`
+  },
+  terms: {
+    title: "Intelligence Terms",
+    content: `By accessing the PoDstream Engine, you agree to:
+    1. Fair Consumption: Using the "Neural Synthesis" for personal knowledge growth only.
+    2. No Scraping: Automated extraction of PoDstream synthesis is strictly prohibited.
+    3. Bandwidth Responsibility: Users are responsible for their own auditory bandwidth consumption.`
+  }
+};
+
+const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean, onClose: () => void, title: string, content: string }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12">
+      <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/80 backdrop-blur-2xl" 
+      />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="relative w-full max-w-2xl bg-neutral-900/50 glass-border rounded-[32px] p-10 overflow-hidden shadow-2xl"
+      >
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-transparent" />
+        <h3 className="text-3xl font-bold text-white mb-6 tracking-tight">{title}</h3>
+        <div className="text-white/60 leading-relaxed font-sans whitespace-pre-line space-y-4">
+          {content}
+        </div>
+        <button 
+          onClick={onClose}
+          className="mt-10 px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-white/90 transition-colors"
+        >
+          Close
+        </button>
+      </motion.div>
+    </div>
+  );
+};
 
 const Landing = () => {
   const { login, user, authLoading } = useAuth();
   const navigate = useNavigate();
   const [logging, setLogging] = useState(false);
+  const [modal, setModal] = useState<{ type: 'privacy' | 'terms' | null }>({ type: null });
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -309,12 +354,30 @@ const Landing = () => {
           <div className="mt-24 pt-8 border-t border-white/5 flex justify-between items-center text-[12px] text-white/20 font-mono uppercase tracking-[0.2em]">
             <span>© 2026 PoDstream Architecture</span>
             <div className="flex gap-8">
-              <span className="cursor-help hover:text-white/40 transition-colors">Privacy</span>
-              <span className="cursor-help hover:text-white/40 transition-colors">Terms</span>
+              <span 
+                onClick={() => setModal({ type: 'privacy' })}
+                className="cursor-pointer hover:text-white/40 transition-colors"
+              >
+                Privacy
+              </span>
+              <span 
+                onClick={() => setModal({ type: 'terms' })}
+                className="cursor-pointer hover:text-white/40 transition-colors"
+              >
+                Terms
+              </span>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* ══ LEGAL MODAL ══ */}
+      <Modal 
+        isOpen={modal.type !== null} 
+        onClose={() => setModal({ type: null })}
+        title={modal.type ? LEGAL_CONTENT[modal.type].title : ""}
+        content={modal.type ? LEGAL_CONTENT[modal.type].content : ""}
+      />
       </div>
     </FluidGlass>
   );
