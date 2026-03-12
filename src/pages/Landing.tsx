@@ -90,10 +90,10 @@ const Landing = () => {
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-[1300px]"
           >
-            <h1 className="font-sans text-white tracking-tighter leading-[0.9] text-[clamp(2.75rem,8vw,10.5rem)]">
-              <span className="font-bold block">Stop scrolling.</span>
-              <span className="font-bold block text-blue-400">Start absorbing.</span>
-              <span className="font-medium italic block opacity-95 mt-4 text-[clamp(1.5rem,4vw,5rem)]">
+            <h1 className="font-sans text-white tracking-tighter leading-[1.05] text-[clamp(2.75rem,8.5vw,10.5rem)]">
+              <span className="font-bold block selection:bg-blue-500">Stop scrolling.</span>
+              <span className="font-bold block text-blue-400 selection:bg-white selection:text-blue-600">Start absorbing.</span>
+              <span className="font-medium italic block opacity-95 mt-8 text-[clamp(1.5rem,4vw,4.5rem)] leading-[1.2] tracking-tight">
                 The world's most intelligent podcast engine.
               </span>
             </h1>
@@ -103,7 +103,8 @@ const Landing = () => {
       </section>
 
       {/* ══ BRUTALIST MARQUEE ══ */}
-      <div className="relative z-10 w-full border-t border-b border-white/20 bg-black/50 backdrop-blur-md py-6 overflow-hidden">
+      <div className="relative z-10 w-full border-t border-b border-white/10 bg-black/40 backdrop-blur-xl py-8 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-blue-500/5 pointer-events-none" />
         <style>{`
           @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
           .marquee-content { display: flex; width: max-content; animation: scroll-left 40s linear infinite; }
