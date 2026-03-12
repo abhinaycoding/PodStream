@@ -75,11 +75,21 @@ function GlassLens({ mode }: { mode: string }) {
   useFrame((state) => {
     if (!ref.current) return;
     const { viewport, pointer, camera } = state;
-    const v = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, 15));
+    
+    // Defensive check for viewport
+    if (!viewport) return;
+    
+    // Avoid getCurrentViewport which might be missing/different in some R3F versions
+    // Using viewport properties directly or with fallback
+    const v = (viewport as any).getCurrentViewport ? (viewport as any).getCurrentViewport(camera, new THREE.Vector3(0, 0, 15)) : viewport;
     if (!v) return;
 
-    const destX = (pointer.x * v.width) / 2;
-    const destY = (pointer.y * v.height) / 2;
+    // Use fallback for pointer to prevent NaN errors
+    const px = pointer?.x ?? 0;
+    const py = pointer?.y ?? 0;
+
+    const destX = (px * v.width) / 2;
+    const destY = (py * v.height) / 2;
     
     ref.current.position.x += (destX - ref.current.position.x) * 0.1;
     ref.current.position.y += (destY - ref.current.position.y) * 0.1;
@@ -118,10 +128,14 @@ function BackgroundObjects() {
     if (!group.current || !data) return;
     const t = data.offset || 0;
     
-    group.current.children.forEach((child, i) => {
-      child.rotation.x += delta * 0.1 * (i % 2 === 0 ? 1 : -1);
-      child.rotation.y += delta * 0.1 * (i % 3 === 0 ? 1 : -1);
-    });
+    if (group.current.children) {
+      group.current.children.forEach((child, i) => {
+        if (child.rotation) {
+          child.rotation.x += delta * 0.1 * (i % 2 === 0 ? 1 : -1);
+          child.rotation.y += delta * 0.1 * (i % 3 === 0 ? 1 : -1);
+        }
+      });
+    }
     group.current.position.y = t * 10;
   });
 
