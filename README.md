@@ -5,7 +5,7 @@
 ![PodStream Visual Language](https://podstream-hq.vercel.app/favicon.svg)
 
 ## 🌐 Live Application
-**[podstream-hq.vercel.app](https://podstream-hq.vercel.app)**
+**[LINK]((https://podstream-two.vercel.app/))**
 
 ---
 
